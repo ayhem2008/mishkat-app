@@ -60,6 +60,7 @@ async function onAuthed(user) {
 
 function openAuthModal() {
   if (!configured) { alert('نظام الحسابات لم يُفعَّل بعد على هذا الموقع.'); return; }
+  if (!supabase) { alert('تعذر تحميل خدمة الحسابات — تحقق من اتصالك بالإنترنت وأعد فتح الصفحة.'); return; }
   document.getElementById('authModal').classList.remove('hidden');
   switchTab('login');
 }
