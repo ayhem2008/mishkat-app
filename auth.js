@@ -156,20 +156,20 @@ function doSignup(e) {
     });
 }
 
-function googleLogin() {
+function githubLogin() {
   var msg = document.getElementById('loginMsg');
   if (!supabase) { msg.style.color = '#E8836E'; msg.textContent = 'تعذر تشغيل خدمة الحسابات.'; return; }
   supabase.auth.signInWithOAuth({
-    provider: 'google',
+    provider: 'github',
     options: { redirectTo: config.redirectUrl }
   }).then(function (r) {
     if (r.error) {
       msg.style.color = '#E8836E';
-      msg.textContent = 'دخول جوجل غير مفعّل بعد على النظام — سجّل ببريدك وكلمة المرور، أو أعد المحاولة لاحقاً.';
+      msg.textContent = 'دخول GitHub غير مفعّل بعد على النظام — سجّل ببريدك وكلمة المرور، أو أعد المحاولة لاحقاً.';
     }
   }).catch(function () {
     msg.style.color = '#E8836E';
-    msg.textContent = 'تعذر بدء دخول جوجل — سجّل ببريدك وكلمة المرور.';
+    msg.textContent = 'تعذر بدء دخول GitHub — سجّل ببريدك وكلمة المرور.';
   });
 }
 
