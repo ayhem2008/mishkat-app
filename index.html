@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مِشكاة — تطبيق مواقيت الصلاة والأذكار</title>
+<meta name="description" content="مِشكاة: مواقيت الصلاة بدقة، أذان المؤذنين المشهورين، بوصلة القبلة، والمسبحة الإلكترونية. حمّل التطبيق مجاناً لأندرويد.">
+<link rel="icon" type="image/png" href="assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0D1210;
+  --bg2:#121916;
+  --bg3:#0A0F0D;
+  --card:#16201B;
+  --card2:#1B2821;
+  --mint:#60C99A;
+  --mint-dim:#3FA376;
+  --gold:#D4AF37;
+  --gold-dim:#A88A2B;
+  --ivory:#F4F1E8;
+  --mist:#9BAE9F;
+  --line:rgba(96,201,154,.14);
+  --shadow:0 18px 50px rgba(0,0,0,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ivory);
+  font-family:'Tajawal',sans-serif;
+  line-height:1.8;
+  overflow-x:hidden;
+}
+.pattern{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.05;
+  background-image:
+    radial-gradient(circle at 25% 20%, rgba(212,175,55,.5) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 75% 60%, rgba(96,201,154,.5) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 50% 85%, rgba(212,175,55,.4) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 10% 75%, rgba(96,201,154,.4) 0 1px, transparent 1.5px);
+  background-size:42px 42px;
+}
+.container{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 20px}
+
+header{
+  position:sticky;top:0;z-index:10;
+  background:rgba(13,18,16,.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;letter-spacing:-.5px}
+.brand img{width:36px;height:36px;border-radius:10px;box-shadow:0 4px 14px rgba(96,201,154,.35)}
+.brand .t{color:var(--gold)}
+nav a{color:var(--mist);text-decoration:none;font-size:14.5px;margin-inline-start:22px;transition:color .2s}
+nav a:hover{color:var(--mint)}
+
+.hero{text-align:center;padding:86px 0 70px;position:relative}
+.hero .icon{
+  width:112px;height:112px;margin:0 auto 26px;border-radius:26px;
+  box-shadow:0 22px 60px rgba(96,201,154,.35), 0 0 0 1px var(--line);
+  animation:float 5s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.hero h1{
+  font-family:'Amiri',serif;font-size:clamp(40px,7vw,62px);font-weight:700;line-height:1.4;
+  background:linear-gradient(135deg,var(--ivory) 0%,var(--gold) 120%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero .tag{
+  margin-top:14px;font-size:clamp(16px,2.6vw,19px);color:var(--mist);font-weight:300;
+}
+.hero .q{
+  margin:26px auto 0;max-width:620px;color:var(--gold);
+  font-family:'Amiri',serif;font-size:clamp(17px,2.8vw,21px);line-height:2.1;
+}
+.hero .q small{display:block;margin-top:6px;color:var(--mist);font-family:'Tajawal',sans-serif;font-size:14px}
+
+.dl-card{
+  margin:48px auto 0;max-width:480px;
+  background:linear-gradient(160deg,var(--card) 0%,var(--bg2) 100%);
+  border:1px solid var(--line);border-radius:22px;padding:30px 26px;
+  box-shadow:var(--shadow);
+}
+.dl-badge{
+  display:inline-block;padding:5px 14px;border-radius:99px;font-size:13px;font-weight:500;
+  color:var(--mint);border:1px solid var(--line);background:rgba(96,201,154,.08);
+  letter-spacing:.3px;
+}
+.dl-badge.gold{color:var(--gold);border-color:rgba(212,175,55,.3);background:rgba(212,175,55,.08)}
+.dl-btn{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  margin-top:18px;padding:16px 20px;border-radius:16px;
+  background:linear-gradient(135deg,var(--mint) 0%,var(--mint-dim) 100%);
+  color:#0A0F0D;font-size:19px;font-weight:800;text-decoration:none;
+  box-shadow:0 12px 34px rgba(96,201,154,.35);
+  transition:transform .2s, box-shadow .2s;
+}
+.dl-btn:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(96,201,154,.5)}
+.dl-btn svg{width:22px;height:22px;flex-shrink:0}
+.dl-meta{display:flex;justify-content:center;gap:18px;margin-top:14px;color:var(--mist);font-size:13px}
+.dl-note{margin-top:12px;font-size:12.5px;color:var(--mist)}
+
+.features{padding:20px 0 60px}
+.sec-title{text-align:center;margin-bottom:44px}
+.sec-title h2{
+  font-family:'Amiri',serif;font-size:clamp(27px,4.5vw,36px);font-weight:700;color:var(--ivory);
+}
+.sec-title p{color:var(--mist);font-size:15px;margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.card{
+  background:linear-gradient(165deg,var(--card2) 0%,var(--bg2) 100%);
+  border:1px solid var(--line);border-radius:18px;padding:24px 22px;
+  transition:transform .25s, border-color .25s;
+}
+.card:hover{transform:translateY(-5px);border-color:rgba(96,201,154,.4)}
+.card .ic{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(96,201,154,.1);border:1px solid var(--line)}
+.card h3{margin:14px 0 6px;font-size:17px;font-weight:700;color:var(--ivory)}
+.card p{font-size:13.5px;color:var(--mist)}
+
+.changelog{padding:20px 0 70px}
+.cl-item{
+  background:linear-gradient(165deg,var(--card) 0%,var(--bg2) 100%);
+  border:1px solid var(--line);border-radius:16px;padding:20px 24px;margin-bottom:16px;
+}
+.cl-item .head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.cl-item .ver{font-family:'Amiri',serif;font-size:19px;font-weight:700;color:var(--gold)}
+.cl-item .date{font-size:13px;color:var(--mist)}
+.cl-item ul{margin-top:10px;padding-inline-start:20px}
+.cl-item li{font-size:14px;color:var(--ivory);margin:4px 0}
+.cl-item li::marker{color:var(--mint)}
+.cl-latest{position:relative;overflow:hidden}
+.cl-latest::before{
+  content:"الأحدث";position:absolute;top:14px;inset-inline-end:-38px;
+  background:var(--mint);color:#0A0F0D;font-size:12px;font-weight:800;
+  padding:4px 42px;transform:rotate(45deg);
+}
+.cl-old{opacity:.72;filter:saturate(.6)}
+
+footer{
+  border-top:1px solid var(--line);padding:34px 0;text-align:center;color:var(--mist);font-size:13.5px;
+  background:var(--bg3);
+}
+footer .end{color:var(--gold);font-family:'Amiri',serif;font-size:15px;margin-bottom:8px}
+
+@media (max-width:600px){
+  nav a{margin-inline-start:14px;font-size:13px}
+  .hero{padding:56px 0 48px}
+  .dl-card{padding:24px 18px}
+}
+</style>
+</head>
+<body>
+<div class="pattern"></div>
+
+<header>
+  <div class="container nav">
+    <div class="brand">
+      <img src="assets/icon.png" alt="شعار مِشكاة">
+      <span>مِشكاة<span class="t">.</span></span>
+    </div>
+    <nav>
+      <a href="#features">المميزات</a>
+      <a href="#download">التحميل</a>
+      <a href="#changelog">التحديثات</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <img class="icon" src="assets/icon.png" alt="شعار مِشكاة">
+    <h1>مِشكاة</h1>
+    <p class="tag">رفيقك لمواقيت الصلاة والأذكار والقبلة — بتصميم هادئ يعينك على الخشوع</p>
+    <p class="q">﴿مَثَلُ نُورِهِ كَمِشْكَاةٍ فِيهَا مِصْبَاحٌ﴾<small>سورة النور — الآية 35</small></p>
+
+    <div class="dl-card" id="download">
+      <span class="dl-badge gold">الإصدار الحالي: 1.1.0</span>
+      <span class="dl-badge">أندرويد 8.0 فأحدث</span>
+      <a class="dl-btn" href="https://github.com/USERNAME/mishkat-app/releases/download/v1.1.0/mishkat-1.1.0.apk" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        تحميل التطبيق
+      </a>
+      <div class="dl-meta">
+        <span>الحجم: 30.2 MB</span>
+        <span>مجاني بالكامل</span>
+      </div>
+      <p class="dl-note">التطبيق غير متاح بعد على Google Play — حمّله من هنا مباشرة، وعند توافره على المتجر ستجد الرابط هنا.</p>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="container">
+    <div class="sec-title">
+      <h2>لماذا مِشكاة؟</h2>
+      <p>أربع عبـادات في تطبيق واحد هادئ</p>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="ic">🕋</div><h3>مواقيت الصلاة الدقيقة</h3><p>حساب موثوق بالأذان والحسابات، مع العدّاد المباشر للصلاة القادمة وإشعار الإقامة قبل الأذان.</p></div>
+      <div class="card"><div class="ic">📢</div><h3>أذان المؤذنين المشهورين</h3><p>اختر مؤذنك المفضل وسيُؤذّن لك حتى مع إغلاق التطبيق، بجودة عالية وصوت صافٍ.</p></div>
+      <div class="card"><div class="ic">🧭</div><h3>بوصلة القبلة</h3><p>اتجاه القبلة حسب موقعك الحالي أو المدينة المختارة، بدقة عالية وواجهة أنيقة.</p></div>
+      <div class="card"><div class="ic">📿</div><h3>المسبحة والأذكار</h3><p>عدّاد تسبيح سلس مع مجموعات أذكار مرتبة (الصباح، المساء، النوم، الطعام) تحفظ تقدمك تلقائياً.</p></div>
+      <div class="card"><div class="ic">🌙</div><h3>التاريخ الهجري والميلادي</h3><p>يعرض لك يومك بالتاريخين باستمرار، مع تنسيق عربي أصيل.</p></div>
+      <div class="card"><div class="ic">🎨</div><h3>تصميم يريح العين</h3><p>ألوان زمردية داكنة مريحة ليلاً، مع إمكانية تغيير الطابع حسب ذوقك.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="changelog" id="changelog">
+  <div class="container">
+    <div class="sec-title">
+      <h2>سجل التحديثات</h2>
+      <p>يُحدَّث هذا الموقع تلقائياً مع كل إصدار جديد</p>
+    </div>
+
+    <div class="cl-item cl-latest">
+      <div class="head"><span class="ver">الإصدار 1.1.0</span><span class="date">أغسطس 2026</span></div>
+      <ul>
+        <li>إصلاح: عدّادات المسبحة تُحفظ الآن فعلياً عند كل ضغطة</li>
+        <li>إصلاح: إيقاف تنبيهات الصلاة يلغي المنبهات المجدولة فوراً</li>
+        <li>إصلاح: مواقيت اليوم تتحدث تلقائياً عند منتصف الليل</li>
+        <li>إصلاح: معاينة الأذان لم تعد تجمّد التطبيق</li>
+        <li>إصلاح: البوصلة تعمل على جميع مقاسات الشاشات</li>
+        <li>تحسينات عامة في الاستقرار والأداء</li>
+      </ul>
+    </div>
+
+    <div class="cl-item cl-old">
+      <div class="head"><span class="ver">الإصدار 1.0.9</span><span class="date">يوليو 2026</span></div>
+      <ul>
+        <li>إطلاق أولي للتطبيق وإتاحة التحميل المباشر</li>
+        <li>مواقيت الصلاة مع إشعارات الأذان والإقامة</li>
+        <li>بوصلة القبلة، المسبحة، والأذكار</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p class="end">﴿وَذَكِّرْ فَإِنَّ الذِّكْرَى تَنفَعُ الْمُؤْمِنِينَ﴾</p>
+    <p>مِشكاة — نسخة 1.1.0 · جميع الملفات الصوتية والتطبيق متاحة مجاناً للاستخدام الشخصي</p>
+  </div>
+</footer>
+</body>
+</html>
