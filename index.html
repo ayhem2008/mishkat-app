@@ -148,6 +148,17 @@ nav a:hover::after{width:100%}
 .scroll-hint i::after{content:"";position:absolute;top:7px;inset-inline-start:50%;width:5px;height:9px;margin-inline-start:-2.5px;border-radius:99px;background:var(--gold);animation:wheel 1.8s ease-in-out infinite}
 @keyframes wheel{0%{transform:translateY(0);opacity:1}70%{transform:translateY(14px);opacity:0}100%{opacity:0}}
 
+/* ========== الإحصائيات العامة ========== */
+.pub-stats{display:flex;justify-content:center;gap:16px;margin-top:34px;flex-wrap:wrap}
+.pub-stat{display:flex;align-items:center;gap:12px;padding:13px 22px;border-radius:16px;
+  background:linear-gradient(165deg,rgba(36,42,28,.55) 0%,rgba(20,26,18,.85) 100%);
+  border:1px solid var(--line);transition:transform .25s,border-color .25s}
+.pub-stat:hover{transform:translateY(-3px);border-color:rgba(227,194,104,.45)}
+.pub-stat .ic{font-size:22px;animation:sparkle 3.2s ease-in-out infinite}
+.pub-stat .ic.two{animation-delay:-1.6s}
+.pub-stat .val{font-family:'Amiri',serif;font-size:26px;font-weight:700;color:var(--gold-bright);line-height:1.2}
+.pub-stat .lbl{font-size:12.5px;color:var(--mist)}
+
 /* ========== الأقسام ========== */
 section{position:relative;z-index:2}
 .sec-title{text-align:center;margin-bottom:46px}
@@ -337,6 +348,17 @@ footer .copy{color:var(--mist);font-size:13.5px}
       <p class="dl-note">التطبيق غير متاح بعد على Google Play — حمّله من هنا مباشرة، وعند توافره على المتجر ستجد الرابط هنا.</p>
     </div>
 
+    <div class="pub-stats hidden" id="pubStats">
+      <div class="pub-stat">
+        <span class="ic">⬇️</span>
+        <div><div class="val" id="statDownloads">0</div><div class="lbl">تحميل للتطبيق</div></div>
+      </div>
+      <div class="pub-stat">
+        <span class="ic two">👥</span>
+        <div><div class="val" id="statUsers">0</div><div class="lbl">مستخدم مسجّل</div></div>
+      </div>
+    </div>
+
     <div class="scroll-hint">
       <i></i>
       <span>انزل للمزيد</span>
@@ -462,6 +484,30 @@ document.getElementById('dlBtn').addEventListener('click', trackDownload);
 document.getElementById('authModal').addEventListener('click', function (e) {
   if (e.target === this) closeAuthModal();
 });
+
+// الإحصائيات العامة للجميع: التحميلات + المستخدمون
+function animateNum(el, target) {
+  if (!el || !target) { if (el) el.textContent = (target || 0).toLocaleString('en-US'); return; }
+  const t0 = performance.now(), dur = 1300;
+  (function tick(t) {
+    const p = Math.min((t - t0) / dur, 1);
+    el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString('en-US');
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+async function loadPublicStats() {
+  const strip = document.getElementById('pubStats');
+  if (!strip || !supabase) return;
+  try {
+    const { data, error } = await supabase.rpc('get_public_stats');
+    if (error || !data) return;
+    strip.classList.remove('hidden');
+    animateNum(document.getElementById('statDownloads'), data.total_downloads);
+    animateNum(document.getElementById('statUsers'), data.total_users);
+  } catch (e) {}
+}
+loadPublicStats();
+setInterval(loadPublicStats, 60000);
 </script>
 
 <script>
