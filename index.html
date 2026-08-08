@@ -303,6 +303,8 @@ footer .copy{color:var(--mist);font-size:13.5px}
   <span>مِشْكَاة</span>
 </div>
 
+<div id="jsBanner" class="hidden" style="position:fixed;top:0;left:0;right:0;z-index:999;background:#7A5A10;color:#FFF6DE;text-align:center;padding:10px;font-size:13px"></div>
+
 <div class="sky">
   <div class="orb gold"></div>
   <div class="orb olive"></div>
@@ -487,10 +489,22 @@ footer .copy{color:var(--mist);font-size:13.5px}
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="vendor/supabase.min.js"></script>
 <script src="supabase-config.js"></script>
 <script src="auth.js"></script>
 <script>
+// كاشف أخطاء: أي خلل في الجافاسكربت يظهر بشريط أصفر بدل الصمت
+window.addEventListener('error', function (ev) {
+  var b = document.getElementById('jsBanner');
+  if (b) { b.style.display = 'block'; b.textContent = '⚠️ خطأ في الصفحة: ' + (ev.message || 'خطأ غير معروف'); }
+});
+window.addEventListener('unhandledrejection', function (ev) {
+  var b = document.getElementById('jsBanner');
+  if (b) { b.style.display = 'block'; b.textContent = '⚠️ خطأ غير متوقع: ' + (ev.reason && ev.reason.message ? ev.reason.message : String(ev.reason)); }
+});
+window.addEventListener('load', function () { setTimeout(function () { document.getElementById('loader').classList.add('done'); }, 650); });
+// ضمانة: حتى لو علق التحميل، تُخفى الشاشة بعد 4 ثوانٍ
+setTimeout(function () { document.getElementById('loader').classList.add('done'); }, 4000);
 // تفعيل النظام
 initAuth();
 document.getElementById('dlBtn').addEventListener('click', trackDownload);
