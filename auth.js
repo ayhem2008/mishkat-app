@@ -12,6 +12,7 @@ function initAuth() {
   });
   supabase.auth.getSession().then(({ data }) => {
     if (data.session) onAuthed(data.session.user);
+    else onSignedOut();
   });
   supabase.auth.onAuthStateChange((event, session) => {
     if (session) onAuthed(session.user);
@@ -23,27 +24,36 @@ function onSignedOut() {
   currentUser = null;
   isAdmin = false;
   const chip = document.getElementById('userChip');
-  if (chip) chip.innerHTML = '<button class="nav-login" onclick="openAuthModal()">دخول / حساب جديد</button>';
+  if (chip) chip.innerHTML = configured
+    ? '<button class="nav-login" onclick="openAuthModal()">دخول / حساب جديد</button>'
+    : '';
   const adminLink = document.getElementById('statsLink');
   if (adminLink) adminLink.style.display = 'none';
   if (window.location.pathname.endsWith('stats.html')) renderStatsGuard();
 }
 
+function chipHTML(user, avatarUrl) {
+  const name = (user.email || 'مستخدم').split('@')[0];
+  const av = avatarUrl
+    ? '<img class="chip-avatar" src="' + avatarUrl + '" alt="">'
+    : '<span class="chip-avatar ph">' + name.charAt(0).toUpperCase() + '</span>';
+  return '<span class="chip-user">' + av + name + '</span>' +
+    '<button class="chip-logout" onclick="signOut()">خروج</button>';
+}
+
 async function onAuthed(user) {
   currentUser = user;
-  const chip = document.getElementById('userChip');
-  if (chip) {
-    const name = (user.email || 'مستخدم').split('@')[0];
-    chip.innerHTML =
-      '<span class="chip-user" title="' + (user.email || '') + '">' + name +
-      '</span><button class="chip-logout" onclick="signOut()">خروج</button>';
-  }
+  let avatarUrl = null;
   try {
-    const { data } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
+    const { data } = await supabase.from('profiles').select('is_admin, avatar_url').eq('id', user.id).single();
     isAdmin = !!data && !!data.is_admin;
+    avatarUrl = data && data.avatar_url ? data.avatar_url : null;
   } catch (e) { isAdmin = false; }
+  const chip = document.getElementById('userChip');
+  if (chip) chip.innerHTML = chipHTML(user, avatarUrl);
   const adminLink = document.getElementById('statsLink');
   if (adminLink) adminLink.style.display = isAdmin ? '' : 'none';
+  uploadPendingAvatar(user.id);
   pingLastSeen();
   if (window.location.pathname.endsWith('stats.html')) initStats();
 }
@@ -95,7 +105,10 @@ async function doSignup(e) {
   if (pass.length < 6) { authMsg('signupMsg', 'كلمة المرور 6 أحرف على الأقل', false); return; }
   const btn = e.target.querySelector('button');
   btn.disabled = true;
-  const { error } = await supabase.auth.signUp({ email, password: pass, options: { emailRedirectTo: config.redirectUrl } });
+  const { error } = await supabase.auth.signUp({
+    email, password: pass,
+    options: { emailRedirectTo: config.redirectUrl }
+  });
   btn.disabled = false;
   if (error) {
     authMsg('signupMsg', error.message.includes('already registered')
@@ -103,7 +116,7 @@ async function doSignup(e) {
       : 'تعذر إنشاء الحساب: ' + error.message, false);
     return;
   }
-  authMsg('signupMsg', 'تم إنشاء حسابك! تحقق من بريدك للتفعيل ثم سجّل دخولك.', true);
+  authMsg('signupMsg', 'تم إنشاء حسابك! تحقق من بريدك للتفعيل، ثم سجّل دخولك وستُضاف صورتك تلقائياً.', true);
 }
 
 async function googleLogin() {
@@ -126,6 +139,52 @@ async function googleLogin() {
 async function signOut() {
   if (supabase) await supabase.auth.signOut();
   onSignedOut();
+}
+
+// ===== صورة الحساب =====
+function pickAvatar(file) {
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => {
+    const size = 256;
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const s = Math.min(img.width, img.height);
+    ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+    localStorage.setItem('mishkat_pending_avatar', dataUrl);
+    const prev = document.getElementById('avatarPreview');
+    prev.style.backgroundImage = 'url(' + dataUrl + ')';
+    prev.textContent = '';
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+function dataURLtoBlob(dataUrl) {
+  const arr = dataUrl.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  const u8 = new Uint8Array(bstr.length);
+  for (let i = 0; i < bstr.length; i++) u8[i] = bstr.charCodeAt(i);
+  return new Blob([u8], { type: mime });
+}
+
+async function uploadPendingAvatar(uid) {
+  const pending = localStorage.getItem('mishkat_pending_avatar');
+  if (!pending || !supabase) return;
+  localStorage.removeItem('mishkat_pending_avatar');
+  try {
+    await supabase.storage.from('avatars').upload(uid + '/avatar.jpg', dataURLtoBlob(pending), {
+      upsert: true, contentType: 'image/jpeg'
+    });
+    const { data } = supabase.storage.from('avatars').getPublicUrl(uid + '/avatar.jpg');
+    await supabase.from('profiles').update({ avatar_url: data.publicUrl }).eq('id', uid);
+    const { data: prof } = await supabase.from('profiles').select('is_admin, avatar_url').eq('id', uid).single();
+    isAdmin = !!prof && !!prof.is_admin;
+    const chip = document.getElementById('userChip');
+    if (chip) chip.innerHTML = chipHTML(currentUser, prof && prof.avatar_url);
+  } catch (e) {}
 }
 
 // تتبع الضغطة على زر التحميل
