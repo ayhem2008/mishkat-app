@@ -1,6 +1,6 @@
 // مِشكاة — نظام الحسابات والإحصائيات (متوافق مع جميع المتصفحات)
 var config = window.SUPABASE_CONFIG || {};
-var supabase = null;
+var supabase = window.supabase;
 var currentUser = null;
 var isAdmin = false;
 var configured = !!(config.url && config.anonKey);
