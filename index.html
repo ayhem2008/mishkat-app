@@ -489,14 +489,14 @@ footer .copy{color:var(--mist);font-size:13.5px}
   </div>
 </div>
 
-<script src="vendor/supabase.min.js"></script>
-<script src="supabase-config.js"></script>
-<script src="auth.js"></script>
+<script src="vendor/supabase.min.js?v=3"></script>
+<script src="supabase-config.js?v=3"></script>
+<script src="auth.js?v=3"></script>
 <script>
 // كاشف أخطاء: أي خلل في الجافاسكربت يظهر بشريط أصفر بدل الصمت
 window.addEventListener('error', function (ev) {
   var b = document.getElementById('jsBanner');
-  if (b) { b.style.display = 'block'; b.textContent = '⚠️ خطأ في الصفحة: ' + (ev.message || 'خطأ غير معروف'); }
+  if (b) { b.style.display = 'block'; b.textContent = '⚠️ خطأ في الصفحة: ' + (ev.message || 'خطأ غير معروف') + (ev.filename ? ' (' + ev.filename.split('/').pop() + ':' + ev.lineno + ')' : ''); }
 });
 window.addEventListener('unhandledrejection', function (ev) {
   var b = document.getElementById('jsBanner');
@@ -506,7 +506,12 @@ window.addEventListener('load', function () { setTimeout(function () { document.
 // ضمانة: حتى لو علق التحميل، تُخفى الشاشة بعد 4 ثوانٍ
 setTimeout(function () { document.getElementById('loader').classList.add('done'); }, 4000);
 // تفعيل النظام
-initAuth();
+if (typeof initAuth === 'function') {
+  initAuth();
+} else {
+  var b = document.getElementById('jsBanner');
+  if (b) { b.style.display = 'block'; b.textContent = '⚠️ لم يُحمَّل ملف الحسابات (auth.js) — أعد فتح الصفحة مع Ctrl+F5'; }
+}
 document.getElementById('dlBtn').addEventListener('click', trackDownload);
 // إغلاق النافذة بالنقر خارجها
 document.getElementById('authModal').addEventListener('click', function (e) {
