@@ -25,7 +25,7 @@ function onSignedOut() {
   isAdmin = false;
   var chip = document.getElementById('userChip');
   if (chip) chip.innerHTML = configured
-    ? '<button class="nav-login" onclick="openAuthModal()">دخول / حساب جديد</button>'
+    ? '<button class="nav-login" onclick="openLoginModal()">دخول</button><button class="nav-login primary" onclick="openSignupModal()">حساب جديد</button>'
     : '';
   var adminLink = document.getElementById('statsLink');
   if (adminLink) adminLink.style.display = 'none';
@@ -70,28 +70,30 @@ function loadProfileAndFinish(user) {
     });
 }
 
-function openAuthModal() {
+function openLoginModal() {
+  if (!showAuthNote('loginMsg')) return;
+  document.getElementById('loginModal').classList.remove('hidden');
+}
+function openSignupModal() {
+  if (!showAuthNote('signupMsg')) return;
+  document.getElementById('signupModal').classList.remove('hidden');
+}
+function showAuthNote(id) {
   var msg = '';
   if (!configured) msg = 'نظام الحسابات لم يُفعَّل بعد على هذا الموقع.';
   else if (!supabase) msg = 'تعذر تشغيل خدمة الحسابات هذه المرة — أعد فتح الصفحة.';
   if (msg) {
-    var el = document.getElementById('loginMsg');
+    var el = document.getElementById(id);
     if (el) { el.style.color = '#E8836E'; el.textContent = msg; }
-    document.getElementById('authModal').classList.remove('hidden');
-    switchTab('login');
-    return;
+    return false;
   }
-  document.getElementById('authModal').classList.remove('hidden');
-  switchTab('login');
+  return true;
 }
 function closeAuthModal() {
-  document.getElementById('authModal').classList.add('hidden');
-}
-function switchTab(tab) {
-  document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-  document.getElementById('signupForm').classList.toggle('hidden', tab !== 'signup');
-  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
-  document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+  var lm = document.getElementById('loginModal');
+  if (lm) lm.classList.add('hidden');
+  var sm = document.getElementById('signupModal');
+  if (sm) sm.classList.add('hidden');
 }
 
 function authMsg(id, text, ok) {
@@ -163,11 +165,11 @@ function googleLogin() {
   }).then(function (r) {
     if (r.error) {
       msg.style.color = '#E8836E';
-      msg.textContent = 'دخول جوجل غير مفعّل بعد على النظام. سجّل ببريدك وكلمة المرور.';
+      msg.textContent = 'دخول جوجل غير مفعّل بعد على النظام — سجّل ببريدك وكلمة المرور، أو أعد المحاولة لاحقاً.';
     }
   }).catch(function () {
     msg.style.color = '#E8836E';
-    msg.textContent = 'تعذر بدء دخول جوجل. سجّل ببريدك وكلمة المرور.';
+    msg.textContent = 'تعذر بدء دخول جوجل — سجّل ببريدك وكلمة المرور.';
   });
 }
 

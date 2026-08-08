@@ -240,8 +240,10 @@ footer .end{color:var(--gold);font-family:'Amiri',serif;font-size:16px;margin-bo
 footer .copy{color:var(--mist);font-size:13.5px}
 
 /* ========== الحسابات ========== */
-.nav-login{padding:7px 18px;border-radius:99px;border:1px solid var(--line);background:rgba(227,194,104,.08);color:var(--gold-bright);font-family:'Tajawal';font-size:13px;font-weight:700;cursor:pointer;transition:background .25s,transform .2s}
+.nav-login{padding:7px 18px;border-radius:99px;border:1px solid var(--line);background:rgba(227,194,104,.08);color:var(--gold-bright);font-family:'Tajawal';font-size:13px;font-weight:700;cursor:pointer;transition:background .25s,transform .2s;margin-inline-start:8px}
 .nav-login:hover{background:rgba(227,194,104,.2);transform:translateY(-1px)}
+.nav-login.primary{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#10140E;border:none;box-shadow:0 4px 18px rgba(227,194,104,.3)}
+.nav-login.primary:hover{background:linear-gradient(135deg,var(--gold-bright),var(--gold-deep));box-shadow:0 6px 26px rgba(227,194,104,.5)}
 .chip-user{color:var(--gold-bright);font-weight:700;font-size:13.5px}
 .chip-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;display:inline-block;vertical-align:middle;margin-inline-end:7px;border:1.5px solid var(--gold);box-shadow:0 0 10px rgba(227,194,104,.35)}
 .chip-avatar.ph{background:linear-gradient(135deg,var(--gold),#B08D3E);color:#10140E;font-size:13px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;margin-inline-end:7px;vertical-align:middle;border:none}
@@ -256,9 +258,9 @@ footer .copy{color:var(--mist);font-size:13.5px}
 .modal-close:hover{color:var(--ivory)}
 .modal-card h3{font-family:'Amiri',serif;font-size:23px;color:var(--gold);text-align:center;margin-bottom:4px}
 .modal-card .m-sub{text-align:center;color:var(--mist);font-size:13px;margin-bottom:18px}
-.tabs{display:flex;background:rgba(16,20,14,.6);border-radius:12px;padding:4px;margin-bottom:18px}
-.tab{flex:1;padding:9px;border:none;border-radius:9px;background:none;color:var(--mist);font-family:'Tajawal';font-size:14px;font-weight:700;cursor:pointer;transition:all .25s}
-.tab.active{background:linear-gradient(135deg,var(--gold),#B08D3E);color:#10140E}
+.m-switch{margin-top:16px;text-align:center;font-size:13px;color:var(--mist)}
+.m-switch a{color:var(--gold-bright);font-weight:700;text-decoration:none;border-bottom:1px dashed var(--gold-deep)}
+.m-switch a:hover{color:var(--gold)}
 .modal-card input{width:100%;padding:12px 14px;margin-bottom:12px;border-radius:12px;border:1px solid var(--line);background:rgba(16,20,14,.6);color:var(--ivory);font-family:'Tajawal';font-size:14.5px;transition:border-color .2s}
 .modal-card input:focus{outline:none;border-color:var(--gold)}
 .auth-btn{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--gold),#B08D3E);color:#10140E;font-family:'Tajawal';font-size:16px;font-weight:800;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 8px 26px rgba(227,194,104,.3)}
@@ -316,7 +318,7 @@ footer .copy{color:var(--mist);font-size:13.5px}
 
 <header>
   <div class="container nav">
-    <span id="userChip"><button class="nav-login" onclick="openAuthModal()">دخول / حساب جديد</button></span>
+    <span id="userChip"><button class="nav-login" onclick="openLoginModal()">دخول</button><button class="nav-login primary" onclick="openSignupModal()">حساب جديد</button></span>
     <div class="brand">
       <img src="assets/icon.png" alt="شعار مِشكاة">
       <span>مِشكاة<span class="t">.</span></span>
@@ -451,25 +453,34 @@ footer .copy{color:var(--mist);font-size:13.5px}
   </div>
 </footer>
 
-<!-- نافذة تسجيل الدخول / حساب جديد -->
-<div class="modal hidden" id="authModal">
+<!-- نافذة تسجيل الدخول -->
+<div class="modal hidden" id="loginModal">
   <div class="modal-card">
     <button class="modal-close" onclick="closeAuthModal()" aria-label="إغلاق">✕</button>
-    <h3>أهلاً بك في مِشكاة</h3>
-    <p class="m-sub">سجّل دخولك لمتابعة تحميلاتك وخصوصياتك</p>
-    <div class="tabs">
-      <button class="tab active" id="tabLogin" onclick="switchTab('login')">تسجيل الدخول</button>
-      <button class="tab" id="tabSignup" onclick="switchTab('signup')">حساب جديد</button>
-    </div>
-
+    <h3>تسجيل الدخول</h3>
+    <p class="m-sub">أهلاً بعودتك إلى مِشكاة</p>
     <form id="loginForm" onsubmit="doLogin(event)">
       <input id="loginEmail" type="email" placeholder="البريد الإلكتروني" dir="ltr" required>
       <input id="loginPass" type="password" placeholder="كلمة المرور" dir="ltr" required>
       <button class="auth-btn" type="submit">دخول</button>
       <p class="auth-msg" id="loginMsg"></p>
     </form>
+    <div class="divider"><span>أو</span></div>
+    <button class="google-btn" onclick="googleLogin()">
+      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.2 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.2 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.1 5.7l6.2 5.2C36.9 40.4 44 35 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+      المتابعة بحساب Google
+    </button>
+    <p class="m-switch">ليس لديك حساب؟ <a href="#" onclick="openSignupModal()">أنشئ حساباً جديداً</a></p>
+  </div>
+</div>
 
-    <form id="signupForm" class="hidden" onsubmit="doSignup(event)">
+<!-- نافذة حساب جديد -->
+<div class="modal hidden" id="signupModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeAuthModal()" aria-label="إغلاق">✕</button>
+    <h3>حساب جديد</h3>
+    <p class="m-sub">انضم إلى مِشكاة — حساب واحد لكل شيء</p>
+    <form id="signupForm" onsubmit="doSignup(event)">
       <label class="avatar-pick" for="avatarInput" title="اضغط لاختيار صورة حسابك">
         <span class="avatar-prev" id="avatarPreview">📷</span>
         <span class="avatar-hint">اختر صورة لحسابك</span>
@@ -480,12 +491,7 @@ footer .copy{color:var(--mist);font-size:13.5px}
       <button class="auth-btn" type="submit">إنشاء الحساب</button>
       <p class="auth-msg" id="signupMsg"></p>
     </form>
-
-    <div class="divider"><span>أو</span></div>
-    <button class="google-btn" onclick="googleLogin()">
-      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.2 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.2 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.1 5.7l6.2 5.2C36.9 40.4 44 35 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
-      المتابعة بحساب Google
-    </button>
+    <p class="m-switch">لديك حساب بالفعل؟ <a href="#" onclick="openLoginModal()">سجّل دخولك</a></p>
   </div>
 </div>
 
@@ -514,7 +520,10 @@ if (typeof initAuth === 'function') {
 }
 document.getElementById('dlBtn').addEventListener('click', trackDownload);
 // إغلاق النافذة بالنقر خارجها
-document.getElementById('authModal').addEventListener('click', function (e) {
+document.getElementById('loginModal').addEventListener('click', function (e) {
+  if (e.target === this) closeAuthModal();
+});
+document.getElementById('signupModal').addEventListener('click', function (e) {
   if (e.target === this) closeAuthModal();
 });
 

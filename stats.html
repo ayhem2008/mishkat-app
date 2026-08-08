@@ -130,7 +130,7 @@ function renderStatsGuard() {
     ? '<div class="guard"><div class="ic">🔌</div><h2>النظام غير مفعّل</h2><p>لم تُضبط مفاتيح Supabase بعد.</p></div>'
     : currentUser
       ? '<div class="guard"><div class="ic">⛔</div><h2>لا تملك الصلاحية</h2><p>هذه اللوحة مخصصة لمشرفي مِشكاة فقط.</p></div>'
-      : '<div class="guard"><div class="ic">🔐</div><h2>سجّل دخولك أولاً</h2><p>هذه اللوحة مخصصة لمشرفي مِشكاة فقط.</p><button class="btn" onclick="openAuthModal()">دخول المشرف</button></div>';
+      : '<div class="guard"><div class="ic">🔐</div><h2>سجّل دخولك أولاً</h2><p>هذه اللوحة مخصصة لمشرفي مِشكاة فقط.</p><button class="btn" onclick="openLoginModal()">دخول المشرف</button></div>';
 }
 
 async function initStats() {
