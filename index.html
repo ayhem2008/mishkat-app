@@ -417,9 +417,9 @@ footer .copy{color:var(--mist);font-size:13.5px}
   </div>
 </footer>
 
-<script src="vendor/supabase.min.js?v=5"></script>
-<script src="supabase-config.js?v=5"></script>
-<script src="site.js?v=5"></script>
+<script src="vendor/supabase.min.js?v=6"></script>
+<script src="supabase-config.js?v=6"></script>
+<script src="site.js?v=6"></script>
 <script>
 // كاشف أخطاء: أي خلل في الجافاسكربت يظهر بشريط أصفر بدل الصمت
 window.addEventListener('error', function (ev) {
@@ -447,9 +447,9 @@ function animateNum(el, target) {
 }
 async function loadPublicStats() {
   const strip = document.getElementById('pubStats');
-  if (!strip || !supabase) return;
+  if (!strip || !window.mishkatClient) return;
   try {
-    const { data, error } = await supabase.rpc('get_public_stats');
+    const { data, error } = await window.mishkatClient.rpc('get_public_stats');
     if (error || !data) return;
     strip.classList.remove('hidden');
     animateNum(document.getElementById('statDownloads'), data.total_downloads);
