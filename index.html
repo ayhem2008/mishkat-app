@@ -1,581 +1,602 @@
-﻿<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مِشكاة — رفيقك لمواقيت الصلاة والأذكار والقبلة</title>
-<meta name="description" content="مِشكاة: مواقيت الصلاة بدقة، أذان المؤذنين المشهورين، بوصلة القبلة، والمسبحة الإلكترونية. حمّل التطبيق مجاناً لأندرويد.">
-<link rel="icon" type="image/png" href="assets/icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
-<style>
-/* ========== الثيم: الذهبي الملكي ========== */
-:root{
-  --bg:#10140E;
-  --bg2:#141A12;
-  --bg3:#0C0F0A;
-  --slate:#242A1C;
-  --forest:#4A5A35;
-  --pine:#1C2318;
-  --gold:#E3C268;
-  --gold-bright:#F2D98C;
-  --gold-deep:#B08D3E;
-  --mist:#C9C4A8;
-  --ivory:#F8F3E3;
-  --line:rgba(227,194,104,.16);
-  --glow:rgba(227,194,104,.45);
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;overflow-x:hidden;overflow-x:clip;overscroll-behavior-x:none;touch-action:pan-y pinch-zoom;-webkit-text-size-adjust:100%}
-body{
-  background:var(--bg);
-  color:var(--ivory);
-  font-family:'Tajawal',sans-serif;
-  line-height:1.8;
-  overflow-x:hidden;overflow-x:clip;
-  overscroll-behavior-x:none;
-}
-::selection{background:var(--gold);color:var(--bg3)}
-::-webkit-scrollbar{width:10px}
-::-webkit-scrollbar-track{background:var(--bg3)}
-::-webkit-scrollbar-thumb{background:linear-gradient(var(--gold-deep),var(--forest));border-radius:99px}
-.container{position:relative;z-index:2;max-width:980px;margin:0 auto;padding:0 20px}
-
-/* ========== سماء النجوم والأنوار ========== */
-.sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
-  background:radial-gradient(ellipse 80% 55% at 50% -8%, #1C2A16 0%, var(--bg) 58%, var(--bg3) 100%);}
-.orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;animation:drift 26s ease-in-out infinite alternate;will-change:transform}
-.orb.gold{width:46vw;height:46vw;background:radial-gradient(circle,rgba(227,194,104,.28),transparent 70%);top:-18vw;inset-inline-end:-12vw}
-.orb.olive{width:52vw;height:52vw;background:radial-gradient(circle,rgba(74,90,53,.55),transparent 70%);bottom:-24vw;inset-inline-start:-16vw;animation-delay:-8s}
-.orb.moon{width:30vw;height:30vw;background:radial-gradient(circle,rgba(242,217,140,.14),transparent 70%);top:38%;inset-inline-end:8%;animation-delay:-14s}
-@keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-4vw,5vh) scale(1.12)}100%{transform:translate(3vw,-4vh) scale(.95)}}
-.stars{position:absolute;inset:0}
-.star{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--ivory);opacity:0;animation:twinkle var(--d,5s) ease-in-out var(--delay,0s) infinite}
-@keyframes twinkle{0%,100%{opacity:0;transform:scale(.5)}50%{opacity:.85;transform:scale(1.15)}}
-.pattern{position:absolute;inset:-20%;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23E3C268' stroke-width='1'%3E%3Cpath d='M36 6l8 22 22 8-22 8-8 22-8-22-22-8 22-8z'/%3E%3Ccircle cx='36' cy='36' r='6'/%3E%3C/g%3E%3C/svg%3E");animation:patternMove 50s linear infinite}
-@keyframes patternMove{from{transform:rotate(0deg) translate(0,0)}to{transform:rotate(360deg) translate(-3vw,2vh)}}
-
-/* ========== شاشة التحميل ========== */
-#loader{position:fixed;inset:0;z-index:99;background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .8s,visibility .8s}
-#loader.done{opacity:0;visibility:hidden}
-#loader img{width:88px;height:88px;border-radius:22px;animation:loadPulse 1.4s ease-in-out infinite;box-shadow:0 0 60px var(--glow)}
-@keyframes loadPulse{0%,100%{transform:scale(1);box-shadow:0 0 40px rgba(227,194,104,.25)}50%{transform:scale(1.08);box-shadow:0 0 90px rgba(227,194,104,.6)}}
-#loader .bar{width:170px;height:3px;border-radius:99px;background:rgba(227,194,104,.15);overflow:hidden}
-#loader .bar i{display:block;height:100%;width:40%;border-radius:99px;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:loadBar 1.1s ease-in-out infinite}
-@keyframes loadBar{0%{transform:translateX(220%)}100%{transform:translateX(-220%)}}
-#loader span{color:var(--mist);font-size:13px;letter-spacing:2px;animation:fadePulse 2s infinite}
-@keyframes fadePulse{0%,100%{opacity:.4}50%{opacity:1}}
-
-/* ========== الهيدر ========== */
-header{position:sticky;top:0;z-index:50;background:rgba(16,20,14,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.nav{display:flex;align-items:center;justify-content:space-between;padding:13px 0}
-.brand{display:flex;align-items:center;gap:11px;font-size:20px;font-weight:900;letter-spacing:-.5px}
-.brand img{width:38px;height:38px;border-radius:11px;box-shadow:0 0 16px rgba(227,194,104,.35)}
-.brand .t{color:var(--gold)}
-nav a{position:relative;color:var(--mist);text-decoration:none;font-size:14.5px;margin-inline-start:24px;transition:color .25s}
-nav a::after{content:"";position:absolute;bottom:-6px;inset-inline-start:0;width:0;height:2px;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));transition:width .3s}
-nav a:hover{color:var(--gold-bright)}
-nav a:hover::after{width:100%}
-
-/* ========== البطل ========== */
-.hero{text-align:center;padding:78px 0 60px;position:relative}
-.icon-wrap{position:relative;width:150px;height:150px;margin:0 auto 26px;display:flex;align-items:center;justify-content:center}
-.icon-wrap .halo{position:absolute;inset:-14px;border-radius:36px;background:conic-gradient(from 0deg,transparent 0 60%,rgba(227,194,104,.5) 70%,transparent 80% 100%);filter:blur(8px);animation:haloSpin 7s linear infinite}
-@keyframes haloSpin{to{transform:rotate(360deg)}}
-.icon-wrap .ring{position:absolute;inset:-34px;border-radius:50%;border:1px dashed rgba(227,194,104,.35);animation:haloSpin 24s linear infinite reverse}
-.icon-wrap .ring2{position:absolute;inset:-22px;border-radius:50%;border:1px solid rgba(227,194,104,.12);animation:ringBreathe 4s ease-in-out infinite}
-@keyframes ringBreathe{0%,100%{transform:scale(.96);opacity:.5}50%{transform:scale(1.04);opacity:1}}
-.icon-wrap img{width:112px;height:112px;border-radius:26px;animation:float 5.5s ease-in-out infinite;box-shadow:0 24px 70px rgba(227,194,104,.4),0 0 0 1px var(--line);position:relative;z-index:2}
-@keyframes float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-13px) rotate(1deg)}}
-.orbit{position:absolute;top:-26px;inset-inline-start:-26px;font-size:19px;color:var(--gold);opacity:0;animation:orbitGlow 3.2s ease-in-out 1s infinite}
-@keyframes orbitGlow{0%,100%{opacity:0;transform:translate(0,0) scale(.7)}50%{opacity:1;transform:translate(26px,18px) scale(1.15)}}
-
-.hero h1{
-  font-family:'Amiri',serif;font-size:clamp(46px,8vw,68px);font-weight:700;line-height:1.35;display:inline-block;
-  background:linear-gradient(120deg,var(--ivory) 8%,var(--gold) 34%,var(--gold-bright) 48%,var(--ivory) 66%);
-  background-size:240% auto;background-clip:text;-webkit-background-clip:text;color:transparent;
-  animation:shimmer 5.5s linear infinite;
-  filter:drop-shadow(0 0 26px rgba(227,194,104,.25));
-}
-@keyframes shimmer{to{background-position:240% center}}
-.hero .tag{margin-top:12px;font-size:clamp(16px,2.6vw,19px);color:var(--mist);font-weight:300;animation:riseIn 1s .15s both}
-.hero .q{margin:26px auto 0;max-width:640px;color:var(--gold);font-family:'Amiri',serif;font-size:clamp(17px,2.8vw,21px);line-height:2.2;animation:riseIn 1s .3s both}
-.hero .q small{display:block;margin-top:4px;color:var(--mist);font-family:'Tajawal',sans-serif;font-size:13.5px;letter-spacing:.5px}
-@keyframes riseIn{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
-.deco{font-size:34px;color:rgba(227,194,104,.35);animation:sparkle 3s ease-in-out infinite}
-.deco.r{animation-delay:-1.5s}
-@keyframes sparkle{0%,100%{opacity:.2;transform:scale(.8) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(18deg)}}
-
-/* ========== بطاقة التحميل ========== */
-.dl-card{
-  position:relative;margin:44px auto 0;max-width:500px;
-  background:linear-gradient(160deg,rgba(36,42,28,.75) 0%,rgba(20,26,18,.9) 100%);
-  border-radius:24px;padding:32px 28px;animation:riseIn 1s .45s both;
-  box-shadow:0 26px 70px rgba(0,0,0,.5);
-}
-.dl-card::before{content:"";position:absolute;inset:-1px;border-radius:25px;padding:1.5px;
-  background:linear-gradient(140deg,rgba(227,194,104,.75),transparent 32%,transparent 68%,rgba(227,194,104,.45));
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
-.dl-badges{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
-.dl-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 15px;border-radius:99px;font-size:13px;font-weight:500;border:1px solid var(--line);background:rgba(227,194,104,.07);color:var(--gold-bright)}
-.dl-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:blink 1.6s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-.dl-btn{
-  position:relative;display:flex;align-items:center;justify-content:center;gap:12px;
-  margin-top:20px;padding:17px 22px;border-radius:16px;font-size:19px;font-weight:800;text-decoration:none;
-  color:#10140E;
-  background:linear-gradient(135deg,var(--gold) 0%,var(--gold-deep) 130%);
-  box-shadow:0 10px 34px rgba(227,194,104,.35);
-  transition:transform .25s;
-  overflow:hidden;
-}
-.dl-btn::before{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 16px 60px rgba(227,194,104,.55);opacity:0;animation:glowPulse 2.6s ease-in-out infinite;pointer-events:none}
-@keyframes glowPulse{0%,100%{opacity:0}50%{opacity:1}}
-.dl-btn:hover{transform:translateY(-4px) scale(1.015)}
-.dl-btn::after{content:"";position:absolute;top:0;inset-inline-start:0;width:50%;height:100%;
-  background:linear-gradient(105deg,transparent,rgba(255,255,255,.55),transparent);transform:translateX(-220%) skewX(-20deg);
-  animation:sheen 3.2s ease-in-out infinite}
-@keyframes sheen{0%,60%{transform:translateX(-220%) skewX(-20deg)}100%{transform:translateX(340%) skewX(-20deg)}}
-.dl-btn svg{width:22px;height:22px;animation:bounceDown 1.8s ease-in-out infinite}
-@keyframes bounceDown{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
-.dl-meta{display:flex;justify-content:center;gap:20px;margin-top:15px;color:var(--mist);font-size:13px}
-.dl-meta b{color:var(--gold-bright)}
-.dl-note{margin-top:12px;font-size:12.5px;color:var(--mist)}
-
-.scroll-hint{margin-top:52px;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--mist);font-size:12.5px;opacity:.8}
-.scroll-hint i{display:block;width:26px;height:42px;border:2px solid var(--gold);border-radius:99px;position:relative}
-.scroll-hint i::after{content:"";position:absolute;top:7px;inset-inline-start:50%;width:5px;height:9px;margin-inline-start:-2.5px;border-radius:99px;background:var(--gold);animation:wheel 1.8s ease-in-out infinite}
-@keyframes wheel{0%{transform:translateY(0);opacity:1}70%{transform:translateY(14px);opacity:0}100%{opacity:0}}
-
-/* ========== الإحصائيات العامة ========== */
-.pub-stats{display:flex;justify-content:center;gap:16px;margin-top:34px;flex-wrap:wrap}
-.pub-stat{display:flex;align-items:center;gap:12px;padding:13px 22px;border-radius:16px;
-  background:linear-gradient(165deg,rgba(36,42,28,.55) 0%,rgba(20,26,18,.85) 100%);
-  border:1px solid var(--line);transition:transform .25s,border-color .25s}
-.pub-stat:hover{transform:translateY(-3px);border-color:rgba(227,194,104,.45)}
-.pub-stat .ic{font-size:22px;animation:sparkle 3.2s ease-in-out infinite}
-.pub-stat .ic.two{animation-delay:-1.6s}
-.pub-stat .val{font-family:'Amiri',serif;font-size:26px;font-weight:700;color:var(--gold-bright);line-height:1.2}
-.pub-stat .lbl{font-size:12.5px;color:var(--mist)}
-
-/* ========== الأقسام ========== */
-section{position:relative;z-index:2}
-.sec-title{text-align:center;margin-bottom:46px}
-.sec-title .orn{color:var(--gold);font-size:22px;letter-spacing:8px;animation:sparkle 3.5s ease-in-out infinite}
-.sec-title h2{font-family:'Amiri',serif;font-size:clamp(28px,4.6vw,38px);font-weight:700;color:var(--ivory)}
-.sec-title h2 em{color:var(--gold);font-style:normal}
-.sec-title p{color:var(--mist);font-size:15px;margin-top:8px}
-.why{max-width:720px;margin:0 auto 8px;text-align:center}
-.why p{font-size:clamp(15px,2.2vw,17px);color:var(--mist);line-height:2.3}
-.why strong{color:var(--gold-bright);font-weight:800}
-.why .v{color:var(--gold);font-family:'Amiri',serif;font-size:1.12em}
-
-/* ========== المميزات ========== */
-.features{padding:40px 0 64px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px}
-.card{
-  position:relative;overflow:hidden;
-  background:linear-gradient(165deg,rgba(36,42,28,.6) 0%,rgba(20,26,18,.85) 100%);
-  border:1px solid var(--line);border-radius:20px;padding:26px 24px;
-  opacity:0;transform:translateY(36px);
-  transition:transform .45s cubic-bezier(.2,.8,.25,1),border-color .3s,opacity .6s;
-}
-.card.in{opacity:1;transform:translateY(0)}
-.card:hover{transform:translateY(-7px);border-color:rgba(227,194,104,.45)}
-.card::before{content:"";position:absolute;top:0;inset-inline-start:-120%;width:60%;height:100%;
-  background:linear-gradient(105deg,transparent,rgba(227,194,104,.08),transparent);transform:skewX(-18deg);transition:inset-inline-start .7s}
-.card:hover::before{inset-inline-start:160%}
-.card .ic{position:relative;width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:25px;
-  background:rgba(227,194,104,.09);border:1px solid var(--line);transition:transform .35s}
-.card:hover .ic{transform:rotate(-8deg) scale(1.12)}
-.card .ic::after{content:"";position:absolute;inset:-6px;border-radius:19px;border:1px solid transparent;transition:border-color .3s, transform .3s}
-.card:hover .ic::after{border-color:rgba(227,194,104,.5);transform:scale(1.05)}
-.card h3{margin:15px 0 6px;font-size:17.5px;font-weight:800;color:var(--ivory)}
-.card p{font-size:13.5px;color:var(--mist)}
-
-/* ========== أرقام متحركة ========== */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-top:38px}
-.stat{text-align:center;padding:22px 10px;border-radius:18px;border:1px solid var(--line);
-  background:rgba(20,26,18,.7);opacity:0;transform:scale(.9);transition:opacity .6s,transform .6s,border-color .3s}
-.stat.in{opacity:1;transform:scale(1)}
-.stat:hover{border-color:rgba(227,194,104,.5)}
-.stat .num{font-family:'Amiri',serif;font-size:34px;font-weight:700;color:var(--gold-bright);line-height:1.3}
-.stat .lbl{font-size:13px;color:var(--mist)}
-
-/* ========== سجل التحديثات ========== */
-.changelog{padding:20px 0 74px}
-.cl-item{
-  position:relative;overflow:hidden;
-  background:linear-gradient(165deg,rgba(36,42,28,.5) 0%,rgba(20,26,18,.8) 100%);
-  border:1px solid var(--line);border-radius:18px;padding:22px 26px;margin-bottom:16px;
-  opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s;
-}
-.cl-item.in{opacity:1;transform:translateY(0)}
-.cl-item:hover{border-color:rgba(227,194,104,.4)}
-.cl-item .head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.cl-item .ver{font-family:'Amiri',serif;font-size:20px;font-weight:700;color:var(--gold)}
-.cl-item .date{font-size:13px;color:var(--mist)}
-.cl-item ul{margin-top:11px;padding-inline-start:20px}
-.cl-item li{font-size:14px;color:var(--ivory);margin:4px 0}
-.cl-item li::marker{color:var(--gold)}
-.cl-latest{border-color:rgba(227,194,104,.45);box-shadow:0 0 44px rgba(227,194,104,.1)}
-.cl-latest::before{
-  content:"✦ الأحدث ✦";position:absolute;top:16px;inset-inline-end:-44px;
-  background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#10140E;
-  font-size:12px;font-weight:900;padding:5px 50px;transform:rotate(45deg);
-  animation:badgePulse 2.4s ease-in-out infinite;
-}
-@keyframes badgePulse{0%,100%{opacity:.85}50%{opacity:1}}
-.cl-old{opacity:.78;filter:saturate(.7)}
-.cl-old:hover{opacity:1;filter:saturate(1)}
-
-/* ========== التذييل ========== */
-footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:40px 0 30px;text-align:center;background:linear-gradient(var(--bg3),var(--bg3))}
-.moon{width:56px;height:56px;margin:0 auto 12px;border-radius:50%;position:relative;background:radial-gradient(circle at 38% 35%,var(--gold-bright),var(--gold-deep));
-  box-shadow:0 0 34px rgba(227,194,104,.4)}
-.moon::after{content:"";position:absolute;top:-5px;inset-inline-start:38%;width:52px;height:52px;border-radius:50%;background:var(--bg3)}
-footer .end{color:var(--gold);font-family:'Amiri',serif;font-size:16px;margin-bottom:8px;animation:fadePulse 3.5s infinite}
-footer .copy{color:var(--mist);font-size:13.5px}
-
-@media (max-width:600px){
-  nav a{margin-inline-start:13px;font-size:13px}
-  .hero{padding:54px 0 44px}
-  .dl-card{padding:26px 18px}
-  .orb{filter:blur(45px);opacity:.35}
-  .pattern{animation:none}
-  .hero h1{filter:none}
-}
-/* جزيئات ذهبية صاعدة في الخلفية */
-.motes{position:absolute;inset:0;pointer-events:none}
-.mote{position:absolute;bottom:-12px;border-radius:50%;background:radial-gradient(circle,var(--gold-bright),transparent 70%);opacity:0;animation:rise var(--dur,14s) linear var(--delay,0s) infinite}
-@keyframes rise{
-  0%{transform:translate(0,0);opacity:0}
-  8%{opacity:var(--op,.7)}
-  50%{transform:translate(var(--sway,18px),-46vh);opacity:var(--op,.7)}
-  92%{opacity:0}
-  100%{transform:translate(calc(var(--sway,18px)*-.6),-94vh);opacity:0}
-}
-</style>
-</head>
-<body>
-
-<div id="loader">
-  <img src="assets/icon.png" alt="مِشكاة">
-  <div class="bar"><i></i></div>
-  <span>مِشْكَاة</span>
-</div>
-
-<div id="jsBanner" class="hidden" style="position:fixed;top:0;left:0;right:0;z-index:999;background:#7A5A10;color:#FFF6DE;text-align:center;padding:10px;font-size:13px"></div>
-
-<div class="sky">
-  <div class="orb gold"></div>
-  <div class="orb olive"></div>
-  <div class="orb moon"></div>
-  <div class="stars" id="stars"></div>
-  <div class="motes" id="motes"></div>
-  <div class="pattern"></div>
-</div>
-
-<header>
-  <div class="container nav">
-    <div class="brand">
-      <img src="assets/icon.png" alt="شعار مِشكاة">
-      <span>مِشكاة<span class="t">.</span></span>
-    </div>
-    <nav>
-      <a href="#features">المميزات</a>
-      <a href="#download">التحميل</a>
-      <a href="#changelog">التحديثات</a>
-    </nav>
-  </div>
-</header>
-
-<section class="hero">
-  <div class="container">
-    <div class="icon-wrap">
-      <div class="halo"></div>
-      <div class="ring"></div>
-      <div class="ring2"></div>
-      <img src="assets/icon.png" alt="شعار مِشكاة">
-      <span class="orbit">✦</span>
-    </div>
-    <h1>مِشكاة</h1>
-    <p class="tag">مرشدُك إلى النور — ومن اسمه تستنير</p>
-    <p class="q">﴿مَثَلُ نُورِهِ كَمِشْكَاةٍ فِيهَا مِصْبَاحٌ﴾<small>سورة النور — الآية 35</small></p>
-
-    <div class="dl-card" id="download">
-      <div class="dl-badges">
-        <span class="dl-badge"><span class="dot"></span>الإصدار الحالي: 1.4.1</span>
-        <span class="dl-badge">أندرويد 8.0 فأحدث</span>
-      </div>
-      <a class="dl-btn" id="dlBtn" href="https://github.com/ayhem2008/mishkat-app/releases/download/v1.4.1/app-release.apk" download>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        تحميل التطبيق
-      </a>
-      <div class="dl-meta">
-        <span>الحجم: <b>213.5 MB</b></span>
-        <span>مجاني بالكامل</span>
-      </div>
-      <p class="dl-note">التطبيق غير متاح بعد على Google Play — حمّله من هنا مباشرة، وعند توافره على المتجر ستجد الرابط هنا.</p>
-    </div>
-
-    <div class="pub-stats hidden" id="pubStats">
-      <div class="pub-stat">
-        <span class="ic">⬇️</span>
-        <div><div class="val" id="statDownloads">0</div><div class="lbl">تحميل للتطبيق</div></div>
-      </div>
-    </div>
-
-    <div class="scroll-hint">
-      <i></i>
-      <span>انزل للمزيد</span>
-    </div>
-  </div>
-</section>
-
-<section class="features" id="features">
-  <div class="container">
-    <div class="sec-title">
-      <div class="orn">✦ ✦ ✦</div>
-      <h2>لماذا <em>مِشكاة</em>؟</h2>
-    </div>
-    <div class="why">
-      <p><strong>مِشكاة</strong> ليست مجرد اسم، بل رمزٌ للنور؛ فالمِشكاة هي الكُوّة التي تحتضن المصباح، وقد وردت في قوله تعالى: <span class="v">﴿مَثَلُ نُورِهِ كَمِشْكَاةٍ فِيهَا مِصْبَاحٌ﴾</span>. ومن هذا المعنى استلهمنا هويتنا: أن تكون <strong>مِشكاة</strong> مساحةً تحتضن القرآن وعلومه وما يعين على تدبّره، وتقرّب نور الوحي إلى قلبك وحياتك.</p>
-    </div>
-    <div class="grid">
-      <div class="card"><div class="ic">🕋</div><h3>مواقيت الصلاة الدقيقة</h3><p>حساب موثوق بالأذان والحسابات، مع العدّاد المباشر للصلاة القادمة وإشعار الإقامة قبل الأذان.</p></div>
-      <div class="card"><div class="ic">📢</div><h3>أذان المؤذنين المشهورين</h3><p>اختر مؤذنك المفضل وسيُؤذّن لك حتى مع إغلاق التطبيق، بجودة عالية وصوت صافٍ.</p></div>
-      <div class="card"><div class="ic">🧭</div><h3>بوصلة القبلة</h3><p>اتجاه القبلة حسب موقعك الحالي أو المدينة المختارة، بدقة عالية وواجهة أنيقة.</p></div>
-      <div class="card"><div class="ic">📿</div><h3>المسبحة والأذكار</h3><p>عدّاد تسبيح سلس مع مجموعات أذكار مرتبة تحفظ تقدمك تلقائياً.</p></div>
-      <div class="card"><div class="ic">📖</div><h3>المصحف مع التفسير</h3><p>القرآن كاملاً بالرسم العثماني، تفسير ميسّر لكل آية بمجرد الضغط عليها، وموضع قراءتك محفوظ تلقائياً — بلا إنترنت.</p></div>
-      <div class="card"><div class="ic">🌙</div><h3>التاريخ الهجري والميلادي</h3><p>يعرض لك يومك بالتاريخين باستمرار، مع تنسيق عربي أصيل.</p></div>
-      <div class="card"><div class="ic">👑</div><h3>طابع ذهبي ملكي</h3><p>الثيم الذهبي الملكي هو الأساس الآن — مع سبعة طوابيع أخرى للاختيار حسب ذوقك.</p></div>
-    </div>
-
-    <div class="stats">
-      <div class="stat"><div class="num" data-count="9">0</div><div class="lbl">أصوات مؤذنين</div></div>
-      <div class="stat"><div class="num" data-count="8">0</div><div class="lbl">مدن عربية</div></div>
-      <div class="stat"><div class="num" data-count="22">0</div><div class="lbl">ذِكراً مرتباً</div></div>
-      <div class="stat"><div class="num" data-count="8">0</div><div class="lbl">طوابيع ألوان</div></div>
-    </div>
-  </div>
-</section>
-
-<section class="changelog" id="changelog">
-  <div class="container">
-    <div class="sec-title">
-      <div class="orn">✦ ✦ ✦</div>
-      <h2>سجل <em>التحديثات</em></h2>
-      <p>يُحدَّث هذا الموقع تلقائياً مع كل إصدار جديد</p>
-    </div>
-
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مِشكاة — رفيقك لمواقيت الصلاة والأذكار والقبلة</title>
+<meta name="description" content="مِشكاة: مواقيت الصلاة بدقة، أذان المؤذنين المشهورين، بوصلة القبلة، والمسبحة الإلكترونية. حمّل التطبيق مجاناً لأندرويد.">
+<link rel="icon" type="image/png" href="assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ========== الثيم: الذهبي الملكي ========== */
+:root{
+  --bg:#10140E;
+  --bg2:#141A12;
+  --bg3:#0C0F0A;
+  --slate:#242A1C;
+  --forest:#4A5A35;
+  --pine:#1C2318;
+  --gold:#E3C268;
+  --gold-bright:#F2D98C;
+  --gold-deep:#B08D3E;
+  --mist:#C9C4A8;
+  --ivory:#F8F3E3;
+  --line:rgba(227,194,104,.16);
+  --glow:rgba(227,194,104,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden;overflow-x:clip;overscroll-behavior-x:none;touch-action:pan-y pinch-zoom;-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);
+  color:var(--ivory);
+  font-family:'Tajawal',sans-serif;
+  line-height:1.8;
+  overflow-x:hidden;overflow-x:clip;
+  overscroll-behavior-x:none;
+}
+::selection{background:var(--gold);color:var(--bg3)}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--bg3)}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--gold-deep),var(--forest));border-radius:99px}
+.container{position:relative;z-index:2;max-width:980px;margin:0 auto;padding:0 20px}
+
+/* ========== سماء النجوم والأنوار ========== */
+.sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  background:radial-gradient(ellipse 80% 55% at 50% -8%, #1C2A16 0%, var(--bg) 58%, var(--bg3) 100%);}
+.orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;animation:drift 26s ease-in-out infinite alternate;will-change:transform}
+.orb.gold{width:46vw;height:46vw;background:radial-gradient(circle,rgba(227,194,104,.28),transparent 70%);top:-18vw;inset-inline-end:-12vw}
+.orb.olive{width:52vw;height:52vw;background:radial-gradient(circle,rgba(74,90,53,.55),transparent 70%);bottom:-24vw;inset-inline-start:-16vw;animation-delay:-8s}
+.orb.moon{width:30vw;height:30vw;background:radial-gradient(circle,rgba(242,217,140,.14),transparent 70%);top:38%;inset-inline-end:8%;animation-delay:-14s}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-4vw,5vh) scale(1.12)}100%{transform:translate(3vw,-4vh) scale(.95)}}
+.stars{position:absolute;inset:0}
+.star{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--ivory);opacity:0;animation:twinkle var(--d,5s) ease-in-out var(--delay,0s) infinite}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.5)}50%{opacity:.85;transform:scale(1.15)}}
+.pattern{position:absolute;inset:-20%;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23E3C268' stroke-width='1'%3E%3Cpath d='M36 6l8 22 22 8-22 8-8 22-8-22-22-8 22-8z'/%3E%3Ccircle cx='36' cy='36' r='6'/%3E%3C/g%3E%3C/svg%3E");animation:patternMove 50s linear infinite}
+@keyframes patternMove{from{transform:rotate(0deg) translate(0,0)}to{transform:rotate(360deg) translate(-3vw,2vh)}}
+
+/* ========== شاشة التحميل ========== */
+#loader{position:fixed;inset:0;z-index:99;background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .8s,visibility .8s}
+#loader.done{opacity:0;visibility:hidden}
+#loader img{width:88px;height:88px;border-radius:22px;animation:loadPulse 1.4s ease-in-out infinite;box-shadow:0 0 60px var(--glow)}
+@keyframes loadPulse{0%,100%{transform:scale(1);box-shadow:0 0 40px rgba(227,194,104,.25)}50%{transform:scale(1.08);box-shadow:0 0 90px rgba(227,194,104,.6)}}
+#loader .bar{width:170px;height:3px;border-radius:99px;background:rgba(227,194,104,.15);overflow:hidden}
+#loader .bar i{display:block;height:100%;width:40%;border-radius:99px;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:loadBar 1.1s ease-in-out infinite}
+@keyframes loadBar{0%{transform:translateX(220%)}100%{transform:translateX(-220%)}}
+#loader span{color:var(--mist);font-size:13px;letter-spacing:2px;animation:fadePulse 2s infinite}
+@keyframes fadePulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* ========== الهيدر ========== */
+header{position:sticky;top:0;z-index:50;background:rgba(16,20,14,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:13px 0}
+.brand{display:flex;align-items:center;gap:11px;font-size:20px;font-weight:900;letter-spacing:-.5px}
+.brand img{width:38px;height:38px;border-radius:11px;box-shadow:0 0 16px rgba(227,194,104,.35)}
+.brand .t{color:var(--gold)}
+nav a{position:relative;color:var(--mist);text-decoration:none;font-size:14.5px;margin-inline-start:24px;transition:color .25s}
+nav a::after{content:"";position:absolute;bottom:-6px;inset-inline-start:0;width:0;height:2px;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));transition:width .3s}
+nav a:hover{color:var(--gold-bright)}
+nav a:hover::after{width:100%}
+
+/* ========== البطل ========== */
+.hero{text-align:center;padding:78px 0 60px;position:relative}
+.icon-wrap{position:relative;width:150px;height:150px;margin:0 auto 26px;display:flex;align-items:center;justify-content:center}
+.icon-wrap .halo{position:absolute;inset:-14px;border-radius:36px;background:conic-gradient(from 0deg,transparent 0 60%,rgba(227,194,104,.5) 70%,transparent 80% 100%);filter:blur(8px);animation:haloSpin 7s linear infinite}
+@keyframes haloSpin{to{transform:rotate(360deg)}}
+.icon-wrap .ring{position:absolute;inset:-34px;border-radius:50%;border:1px dashed rgba(227,194,104,.35);animation:haloSpin 24s linear infinite reverse}
+.icon-wrap .ring2{position:absolute;inset:-22px;border-radius:50%;border:1px solid rgba(227,194,104,.12);animation:ringBreathe 4s ease-in-out infinite}
+@keyframes ringBreathe{0%,100%{transform:scale(.96);opacity:.5}50%{transform:scale(1.04);opacity:1}}
+.icon-wrap img{width:112px;height:112px;border-radius:26px;animation:float 5.5s ease-in-out infinite;box-shadow:0 24px 70px rgba(227,194,104,.4),0 0 0 1px var(--line);position:relative;z-index:2}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-13px) rotate(1deg)}}
+.orbit{position:absolute;top:-26px;inset-inline-start:-26px;font-size:19px;color:var(--gold);opacity:0;animation:orbitGlow 3.2s ease-in-out 1s infinite}
+@keyframes orbitGlow{0%,100%{opacity:0;transform:translate(0,0) scale(.7)}50%{opacity:1;transform:translate(26px,18px) scale(1.15)}}
+
+.hero h1{
+  font-family:'Amiri',serif;font-size:clamp(46px,8vw,68px);font-weight:700;line-height:1.35;display:inline-block;
+  background:linear-gradient(120deg,var(--ivory) 8%,var(--gold) 34%,var(--gold-bright) 48%,var(--ivory) 66%);
+  background-size:240% auto;background-clip:text;-webkit-background-clip:text;color:transparent;
+  animation:shimmer 5.5s linear infinite;
+  filter:drop-shadow(0 0 26px rgba(227,194,104,.25));
+}
+@keyframes shimmer{to{background-position:240% center}}
+.hero .tag{margin-top:12px;font-size:clamp(16px,2.6vw,19px);color:var(--mist);font-weight:300;animation:riseIn 1s .15s both}
+.hero .q{margin:26px auto 0;max-width:640px;color:var(--gold);font-family:'Amiri',serif;font-size:clamp(17px,2.8vw,21px);line-height:2.2;animation:riseIn 1s .3s both}
+.hero .q small{display:block;margin-top:4px;color:var(--mist);font-family:'Tajawal',sans-serif;font-size:13.5px;letter-spacing:.5px}
+@keyframes riseIn{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+.deco{font-size:34px;color:rgba(227,194,104,.35);animation:sparkle 3s ease-in-out infinite}
+.deco.r{animation-delay:-1.5s}
+@keyframes sparkle{0%,100%{opacity:.2;transform:scale(.8) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(18deg)}}
+
+/* ========== بطاقة التحميل ========== */
+.dl-card{
+  position:relative;margin:44px auto 0;max-width:500px;
+  background:linear-gradient(160deg,rgba(36,42,28,.75) 0%,rgba(20,26,18,.9) 100%);
+  border-radius:24px;padding:32px 28px;animation:riseIn 1s .45s both;
+  box-shadow:0 26px 70px rgba(0,0,0,.5);
+}
+.dl-card::before{content:"";position:absolute;inset:-1px;border-radius:25px;padding:1.5px;
+  background:linear-gradient(140deg,rgba(227,194,104,.75),transparent 32%,transparent 68%,rgba(227,194,104,.45));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.dl-badges{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.dl-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 15px;border-radius:99px;font-size:13px;font-weight:500;border:1px solid var(--line);background:rgba(227,194,104,.07);color:var(--gold-bright)}
+.dl-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.dl-btn{
+  position:relative;display:flex;align-items:center;justify-content:center;gap:12px;
+  margin-top:20px;padding:17px 22px;border-radius:16px;font-size:19px;font-weight:800;text-decoration:none;
+  color:#10140E;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold-deep) 130%);
+  box-shadow:0 10px 34px rgba(227,194,104,.35);
+  transition:transform .25s;
+  overflow:hidden;
+}
+.dl-btn::before{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 16px 60px rgba(227,194,104,.55);opacity:0;animation:glowPulse 2.6s ease-in-out infinite;pointer-events:none}
+@keyframes glowPulse{0%,100%{opacity:0}50%{opacity:1}}
+.dl-btn:hover{transform:translateY(-4px) scale(1.015)}
+.dl-btn::after{content:"";position:absolute;top:0;inset-inline-start:0;width:50%;height:100%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.55),transparent);transform:translateX(-220%) skewX(-20deg);
+  animation:sheen 3.2s ease-in-out infinite}
+@keyframes sheen{0%,60%{transform:translateX(-220%) skewX(-20deg)}100%{transform:translateX(340%) skewX(-20deg)}}
+.dl-btn svg{width:22px;height:22px;animation:bounceDown 1.8s ease-in-out infinite}
+@keyframes bounceDown{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+.dl-meta{display:flex;justify-content:center;gap:20px;margin-top:15px;color:var(--mist);font-size:13px}
+.dl-meta b{color:var(--gold-bright)}
+.dl-note{margin-top:12px;font-size:12.5px;color:var(--mist)}
+
+.scroll-hint{margin-top:52px;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--mist);font-size:12.5px;opacity:.8}
+.scroll-hint i{display:block;width:26px;height:42px;border:2px solid var(--gold);border-radius:99px;position:relative}
+.scroll-hint i::after{content:"";position:absolute;top:7px;inset-inline-start:50%;width:5px;height:9px;margin-inline-start:-2.5px;border-radius:99px;background:var(--gold);animation:wheel 1.8s ease-in-out infinite}
+@keyframes wheel{0%{transform:translateY(0);opacity:1}70%{transform:translateY(14px);opacity:0}100%{opacity:0}}
+
+/* ========== الإحصائيات العامة ========== */
+.pub-stats{display:flex;justify-content:center;gap:16px;margin-top:34px;flex-wrap:wrap}
+.pub-stat{display:flex;align-items:center;gap:12px;padding:13px 22px;border-radius:16px;
+  background:linear-gradient(165deg,rgba(36,42,28,.55) 0%,rgba(20,26,18,.85) 100%);
+  border:1px solid var(--line);transition:transform .25s,border-color .25s}
+.pub-stat:hover{transform:translateY(-3px);border-color:rgba(227,194,104,.45)}
+.pub-stat .ic{font-size:22px;animation:sparkle 3.2s ease-in-out infinite}
+.pub-stat .ic.two{animation-delay:-1.6s}
+.pub-stat .val{font-family:'Amiri',serif;font-size:26px;font-weight:700;color:var(--gold-bright);line-height:1.2}
+.pub-stat .lbl{font-size:12.5px;color:var(--mist)}
+
+/* ========== الأقسام ========== */
+section{position:relative;z-index:2}
+.sec-title{text-align:center;margin-bottom:46px}
+.sec-title .orn{color:var(--gold);font-size:22px;letter-spacing:8px;animation:sparkle 3.5s ease-in-out infinite}
+.sec-title h2{font-family:'Amiri',serif;font-size:clamp(28px,4.6vw,38px);font-weight:700;color:var(--ivory)}
+.sec-title h2 em{color:var(--gold);font-style:normal}
+.sec-title p{color:var(--mist);font-size:15px;margin-top:8px}
+.why{max-width:720px;margin:0 auto 8px;text-align:center}
+.why p{font-size:clamp(15px,2.2vw,17px);color:var(--mist);line-height:2.3}
+.why strong{color:var(--gold-bright);font-weight:800}
+.why .v{color:var(--gold);font-family:'Amiri',serif;font-size:1.12em}
+
+/* ========== المميزات ========== */
+.features{padding:40px 0 64px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px}
+.card{
+  position:relative;overflow:hidden;
+  background:linear-gradient(165deg,rgba(36,42,28,.6) 0%,rgba(20,26,18,.85) 100%);
+  border:1px solid var(--line);border-radius:20px;padding:26px 24px;
+  opacity:0;transform:translateY(36px);
+  transition:transform .45s cubic-bezier(.2,.8,.25,1),border-color .3s,opacity .6s;
+}
+.card.in{opacity:1;transform:translateY(0)}
+.card:hover{transform:translateY(-7px);border-color:rgba(227,194,104,.45)}
+.card::before{content:"";position:absolute;top:0;inset-inline-start:-120%;width:60%;height:100%;
+  background:linear-gradient(105deg,transparent,rgba(227,194,104,.08),transparent);transform:skewX(-18deg);transition:inset-inline-start .7s}
+.card:hover::before{inset-inline-start:160%}
+.card .ic{position:relative;width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:25px;
+  background:rgba(227,194,104,.09);border:1px solid var(--line);transition:transform .35s}
+.card:hover .ic{transform:rotate(-8deg) scale(1.12)}
+.card .ic::after{content:"";position:absolute;inset:-6px;border-radius:19px;border:1px solid transparent;transition:border-color .3s, transform .3s}
+.card:hover .ic::after{border-color:rgba(227,194,104,.5);transform:scale(1.05)}
+.card h3{margin:15px 0 6px;font-size:17.5px;font-weight:800;color:var(--ivory)}
+.card p{font-size:13.5px;color:var(--mist)}
+
+/* ========== أرقام متحركة ========== */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-top:38px}
+.stat{text-align:center;padding:22px 10px;border-radius:18px;border:1px solid var(--line);
+  background:rgba(20,26,18,.7);opacity:0;transform:scale(.9);transition:opacity .6s,transform .6s,border-color .3s}
+.stat.in{opacity:1;transform:scale(1)}
+.stat:hover{border-color:rgba(227,194,104,.5)}
+.stat .num{font-family:'Amiri',serif;font-size:34px;font-weight:700;color:var(--gold-bright);line-height:1.3}
+.stat .lbl{font-size:13px;color:var(--mist)}
+
+/* ========== سجل التحديثات ========== */
+.changelog{padding:20px 0 74px}
+.cl-item{
+  position:relative;overflow:hidden;
+  background:linear-gradient(165deg,rgba(36,42,28,.5) 0%,rgba(20,26,18,.8) 100%);
+  border:1px solid var(--line);border-radius:18px;padding:22px 26px;margin-bottom:16px;
+  opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s;
+}
+.cl-item.in{opacity:1;transform:translateY(0)}
+.cl-item:hover{border-color:rgba(227,194,104,.4)}
+.cl-item .head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.cl-item .ver{font-family:'Amiri',serif;font-size:20px;font-weight:700;color:var(--gold)}
+.cl-item .date{font-size:13px;color:var(--mist)}
+.cl-item ul{margin-top:11px;padding-inline-start:20px}
+.cl-item li{font-size:14px;color:var(--ivory);margin:4px 0}
+.cl-item li::marker{color:var(--gold)}
+.cl-latest{border-color:rgba(227,194,104,.45);box-shadow:0 0 44px rgba(227,194,104,.1)}
+.cl-latest::before{
+  content:"✦ الأحدث ✦";position:absolute;top:16px;inset-inline-end:-44px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#10140E;
+  font-size:12px;font-weight:900;padding:5px 50px;transform:rotate(45deg);
+  animation:badgePulse 2.4s ease-in-out infinite;
+}
+@keyframes badgePulse{0%,100%{opacity:.85}50%{opacity:1}}
+.cl-old{opacity:.78;filter:saturate(.7)}
+.cl-old:hover{opacity:1;filter:saturate(1)}
+
+/* ========== التذييل ========== */
+footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:40px 0 30px;text-align:center;background:linear-gradient(var(--bg3),var(--bg3))}
+.moon{width:56px;height:56px;margin:0 auto 12px;border-radius:50%;position:relative;background:radial-gradient(circle at 38% 35%,var(--gold-bright),var(--gold-deep));
+  box-shadow:0 0 34px rgba(227,194,104,.4)}
+.moon::after{content:"";position:absolute;top:-5px;inset-inline-start:38%;width:52px;height:52px;border-radius:50%;background:var(--bg3)}
+footer .end{color:var(--gold);font-family:'Amiri',serif;font-size:16px;margin-bottom:8px;animation:fadePulse 3.5s infinite}
+footer .copy{color:var(--mist);font-size:13.5px}
+
+@media (max-width:600px){
+  nav a{margin-inline-start:13px;font-size:13px}
+  .hero{padding:54px 0 44px}
+  .dl-card{padding:26px 18px}
+  .orb{filter:blur(45px);opacity:.35}
+  .pattern{animation:none}
+  .hero h1{filter:none}
+}
+/* جزيئات ذهبية صاعدة في الخلفية */
+.motes{position:absolute;inset:0;pointer-events:none}
+.mote{position:absolute;bottom:-12px;border-radius:50%;background:radial-gradient(circle,var(--gold-bright),transparent 70%);opacity:0;animation:rise var(--dur,14s) linear var(--delay,0s) infinite}
+@keyframes rise{
+  0%{transform:translate(0,0);opacity:0}
+  8%{opacity:var(--op,.7)}
+  50%{transform:translate(var(--sway,18px),-46vh);opacity:var(--op,.7)}
+  92%{opacity:0}
+  100%{transform:translate(calc(var(--sway,18px)*-.6),-94vh);opacity:0}
+}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <img src="assets/icon.png" alt="مِشكاة">
+  <div class="bar"><i></i></div>
+  <span>مِشْكَاة</span>
+</div>
+
+<div id="jsBanner" class="hidden" style="position:fixed;top:0;left:0;right:0;z-index:999;background:#7A5A10;color:#FFF6DE;text-align:center;padding:10px;font-size:13px"></div>
+
+<div class="sky">
+  <div class="orb gold"></div>
+  <div class="orb olive"></div>
+  <div class="orb moon"></div>
+  <div class="stars" id="stars"></div>
+  <div class="motes" id="motes"></div>
+  <div class="pattern"></div>
+</div>
+
+<header>
+  <div class="container nav">
+    <div class="brand">
+      <img src="assets/icon.png" alt="شعار مِشكاة">
+      <span>مِشكاة<span class="t">.</span></span>
+    </div>
+    <nav>
+      <a href="#features">المميزات</a>
+      <a href="#download">التحميل</a>
+      <a href="#changelog">التحديثات</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="icon-wrap">
+      <div class="halo"></div>
+      <div class="ring"></div>
+      <div class="ring2"></div>
+      <img src="assets/icon.png" alt="شعار مِشكاة">
+      <span class="orbit">✦</span>
+    </div>
+    <h1>مِشكاة</h1>
+    <p class="tag">مرشدُك إلى النور — ومن اسمه تستنير</p>
+    <p class="q">﴿مَثَلُ نُورِهِ كَمِشْكَاةٍ فِيهَا مِصْبَاحٌ﴾<small>سورة النور — الآية 35</small></p>
+
+    <div class="dl-card" id="download">
+      <div class="dl-badges">
+        <span class="dl-badge"><span class="dot"></span>الإصدار الحالي: 1.5.0</span>
+        <span class="dl-badge">أندرويد 8.0 فأحدث</span>
+      </div>
+      <a class="dl-btn" id="dlBtn" href="https://github.com/ayhem2008/mishkat-app/releases/download/v1.5.0/app-release.apk" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        تحميل التطبيق
+      </a>
+      <div class="dl-meta">
+        <span>الحجم: <b>216.6 MB</b></span>
+        <span>مجاني بالكامل</span>
+      </div>
+      <p class="dl-note">التطبيق غير متاح بعد على Google Play — حمّله من هنا مباشرة، وعند توافره على المتجر ستجد الرابط هنا.</p>
+    </div>
+
+    <div class="pub-stats hidden" id="pubStats">
+      <div class="pub-stat">
+        <span class="ic">⬇️</span>
+        <div><div class="val" id="statDownloads">0</div><div class="lbl">تحميل للتطبيق</div></div>
+      </div>
+    </div>
+
+    <div class="scroll-hint">
+      <i></i>
+      <span>انزل للمزيد</span>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="container">
+    <div class="sec-title">
+      <div class="orn">✦ ✦ ✦</div>
+      <h2>لماذا <em>مِشكاة</em>؟</h2>
+    </div>
+    <div class="why">
+      <p><strong>مِشكاة</strong> ليست مجرد اسم، بل رمزٌ للنور؛ فالمِشكاة هي الكُوّة التي تحتضن المصباح، وقد وردت في قوله تعالى: <span class="v">﴿مَثَلُ نُورِهِ كَمِشْكَاةٍ فِيهَا مِصْبَاحٌ﴾</span>. ومن هذا المعنى استلهمنا هويتنا: أن تكون <strong>مِشكاة</strong> مساحةً تحتضن القرآن وعلومه وما يعين على تدبّره، وتقرّب نور الوحي إلى قلبك وحياتك.</p>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="ic">🕋</div><h3>مواقيت الصلاة الدقيقة</h3><p>حساب موثوق بالأذان والحسابات، مع العدّاد المباشر للصلاة القادمة وإشعار الإقامة قبل الأذان.</p></div>
+      <div class="card"><div class="ic">📢</div><h3>أذان المؤذنين المشهورين</h3><p>اختر مؤذنك المفضل وسيُؤذّن لك حتى مع إغلاق التطبيق، بجودة عالية وصوت صافٍ.</p></div>
+      <div class="card"><div class="ic">🧭</div><h3>بوصلة القبلة</h3><p>اتجاه القبلة حسب موقعك الحالي أو المدينة المختارة، بدقة عالية وواجهة أنيقة.</p></div>
+      <div class="card"><div class="ic">📿</div><h3>المسبحة والأذكار</h3><p>عدّاد تسبيح سلس مع مجموعات أذكار مرتبة تحفظ تقدمك تلقائياً.</p></div>
+      <div class="card"><div class="ic">📖</div><h3>المصحف مع التفسير</h3><p>القرآن كاملاً بالرسم العثماني، تفسير ميسّر لكل آية بمجرد الضغط عليها، وموضع قراءتك محفوظ تلقائياً — بلا إنترنت.</p></div>
+      <div class="card"><div class="ic">🌙</div><h3>التاريخ الهجري والميلادي</h3><p>يعرض لك يومك بالتاريخين باستمرار، مع تنسيق عربي أصيل.</p></div>
+      <div class="card"><div class="ic">👑</div><h3>طابع ذهبي ملكي</h3><p>الثيم الذهبي الملكي هو الأساس الآن — مع سبعة طوابيع أخرى للاختيار حسب ذوقك.</p></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="num" data-count="9">0</div><div class="lbl">أصوات مؤذنين</div></div>
+      <div class="stat"><div class="num" data-count="8">0</div><div class="lbl">مدن عربية</div></div>
+      <div class="stat"><div class="num" data-count="22">0</div><div class="lbl">ذِكراً مرتباً</div></div>
+      <div class="stat"><div class="num" data-count="8">0</div><div class="lbl">طوابيع ألوان</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="changelog" id="changelog">
+  <div class="container">
+    <div class="sec-title">
+      <div class="orn">✦ ✦ ✦</div>
+      <h2>سجل <em>التحديثات</em></h2>
+      <p>يُحدَّث هذا الموقع تلقائياً مع كل إصدار جديد</p>
+    </div>
     <div class="cl-item cl-latest">
+
+      <div class="head"><span class="ver">الإصدار 1.5.0</span><span class="date">أغسطس 2026</span></div>
+
+      <ul>
+
+        <li><strong>قِسم التفسير الشامل</strong>: عند فتح قسم القرآن تظهر لك بوابة فيها خياران — «المصحف» لتصفّح الصفحات الورقية، و«التفسير» للدخول إلى التفسير الكامل</li>
+
+        <li><strong>تفسير ابن كثير كاملاً داخل التطبيق</strong>: نص التفسير كامل للقرآن الكريم (أكثر من 6200 آية) مدمج في التطبيق، بدون الحاجة للإنترنت</li>
+
+        <li><strong>تصفّح سلس</strong>: قائمة السور الـ 114 بترتيب المصحف، ثم شبكة أرقام الآيات داخل كل سورة</li>
+
+        <li><strong>صفحة آية متكاملة</strong>: تفتح الآية بخط مصحفي كبير مع معلوماتها (اسم السورة، رقم الآية، النوع، عدد الآيات) وتحتها شرح ابن كثير المفصّل</li>
+
+        <li><strong>تصميم ورقي أنيق</strong>: ألوان كرمية ذهبية وخضراء منسجمة مع ثيم التطبيق بهوية بصرية مميزة لقسم التفسير</li>
+
+      </ul>
+
+    </div>
+
+
+    <div class="cl-item cl-old">
+
       <div class="head"><span class="ver">الإصدار 1.4.1</span><span class="date">أغسطس 2026</span></div>
-      <ul>
-        <li><strong>مصحف المملكة بجودة عالية</strong>: 602 صفحة حقيقية من مصحف مجمع الملك فهد بخط عثمان طه، ممسوحة من الأصل بدقة 400 نقطة في البوصة</li>
-        <li><strong>تصغير صفحات المصحف 5%</strong> لترك مساحة لحركات الحواف الأربع وأزرار التنقل</li>
-        <li><strong>تصميم كريمي موحّد</strong>: قِسم القرآن كامل بخلفية ورقية فاتحة بلا قفزات لونية</li>
-        <li><strong>شريط بحث صغير أعلى المصحف</strong>: ابحث عن السورة أو كلمة في أي آية وانتقل إليها مباشرة</li>
-        <li>انتقالات سلسة بين الصفحات مع حركة السور، وشريط سُفلٍ للتنقل بين الأجزاء والسور والصفحات</li>
-      </ul>
-    </div>
-
-    <div class="cl-item cl-old">
-      <div class="head"><span class="ver">الإصدار 1.3.4</span><span class="date">أغسطس 2026</span></div>
-      <ul>
-        <li><strong>إعادة تصميم صفحة المصحف بالكامل</strong>: أرقام الآيات أصبحت أصغر داخل ميداليات دائرية مذهّبة تزين السطر بدلاً من إفساده</li>
-        <li><strong>الإطار الذهبي يحيط بالكتابة فقط</strong> — من تحت رقم الصفحة إلى فوق أول سطر، وما خارجه زخارف إسلامية جميلة (نجوم، جواهر، حلى زوايا)</li>
-        <li><strong>شريط معلومات جديد فوق الإطار</strong>: يعرض الحزب والصفحة الحالية، ويُفتح بالضغط عليه للقفز لأي صفحة مباشرة</li>
-        <li>قسم القرآن فاتح بالكامل: خلفية بيضاء شفافة، شريط بحث ثابت لا يتحرك عند التقليب، وتفسير وقائمة سور متناسقة</li>
-      </ul>
-    </div>
-
-    <div class="cl-item cl-old">
-      <div class="head"><span class="ver">الإصدار 1.3.3</span><span class="date">أغسطس 2026</span></div>
-      <ul>
-        <li><strong>إصلاح عرض صفحات المصحف</strong>: معالجة التباعد بين لافتة اسم السورة ونص الآيات، وعدم تكرار اسم السورة في صفحات تبدأ بآية واحدة</li>
-        <li>البسملة تُعرض في موضعها الصحيح وبحجم مناسب، وإطارات الصفحات تستقيم مع النص</li>
-        <li><strong>الانتقال المباشر لأي صفحة</strong>: اضغط على شارة «الصفحة رقم» في أعلى المصحف، وأدخل الرقم للقفز إليه فوراً</li>
-        <li>تحسينات استقرار التخطيط على شاشات الأحجام المختلفة</li>
-      </ul>
-    </div>
-
-    <div class="cl-item cl-old">
-      <div class="head"><span class="ver">الإصدار 1.3.2</span><span class="date">أغسطس 2026</span></div>
-      <ul>
-        <li><strong>صفحات المصحف أُعيدت كتابتها برمجياً بالكامل</strong> — لا صور بعد الآن، بل خط أميري للقرآن بتشكيل دقيق وألوان أحكام التجويد (المد أحمر، الغُنّة أخضر، القلقلة أزرق...)</li>
-        <li>الآيات متتالية في تدفق واحد يفصل بينها رقم الآية داخل زخرفة، وصفحات السور تُفتتح بلافتة اسم السورة والبسملة</li>
-        <li>عدد الصفحات مطابق للمصحف الشريف (604 صفحات)، بحجم أقل بكثير للتطبيق</li>
-        <li>الضغط على أي آية يعرض تفسيرها الميسر فوراً وبدقة، مع إطارات وصفحات مرسومة برمجياً بحواف ذهبية وخضراء</li>
-        <li>خفض حجم التطبيق من 77.6 إلى 31.7 MB ثم 33.3 MB في 1.3.2 مع تحسين الأداء والسلاسة</li>
-      </ul>
-    </div>
-
-    <div class="cl-item cl-old">
-      <div class="head"><span class="ver">الإصدار 1.3.0</span><span class="date">أغسطس 2026</span></div>
-      <ul>
-        <li><strong>صفحات المصحف الآن مطابقة لمصحف المدينة الأخضر حرفياً</strong> — 604 صفحات حقيقية بخط عثمان طه وبُنية الآيات الأصلية، تُقلَّب بتمرير أفقي كالكتاب الورقي</li>
-        <li>نفس توزيع الآيات ومواضعها على كل صفحة من صفحات المصحف الرسمي، مع زخارف الصفحات والإطارات الخضراء وترقيم المصحف الأصلي</li>
-        <li>الضغط على أي آية في الصفحة يعرض تفسيرها الميسر، والبحث عن السور والقفز إليها كما كان</li>
-        <li>حفظ تلقائي لآخر صفحة قرأتها — تفتح المصحف وتعود من حيث انتهيت</li>
-      </ul>
-    </div>
-
-    <div class="cl-item cl-old">
-      <div class="head"><span class="ver">الإصدار 1.2.2</span><span class="date">أغسطس 2026</span></div>
-      <ul>
-        <li><strong>المصحف الآن بمظهر المصحف الحقيقي</strong> — 604 صفحات بمصحف المدينة من الأولى إلى الأخيرة، تُقلَّب بسحب أفقي، والآيات تتصل نصاً مدوّناً يفصل بينها رقم الآية داخل النص</li>
-        <li>خانة بحث أعلى الصفحة: اضغط عليها فتظهر قائمة السور مرتّبة، واكتب لتصفيتها فوراً والقفز إلى أي سورة بضغطة</li>
-        <li>الضغط على أي آية يعرض تفسيرها الميسر فوراً، وكل ذلك داخل التطبيق بلا إنترنت</li>
-        <li>حفظ تلقائي لآخر صفحة قرأتها — تفتح المصحف وتعود من حيث انتهيت</li>
-      </ul>
-    </div>
-
-    <div class="cl-item cl-old">
-      <div class="head"><span class="ver">الإصدار 1.2.1</span><span class="date">أغسطس 2026</span></div>
-      <ul>
-        <li>شعارات متحركة لكل شاشة: مصحف يفتح ويتلوّح، هلال، ترس الإعدادات، مسبحة تتدحرج حباتها، بوصلة بسهم حيّ، ولفافة حديثٍ تتلف وتنفتح</li>
-        <li>خلفية حية فاخرة: جزيئات ذهبية متناثرة تسبح في مسارات عشوائية، هالات بوكيه ضبابية بعمق بصري، شهاب، توهجات نابضة، وحلقة دوّارة حول التطبيق</li>
-        <li>الإعدادات انتقلت إلى شاشة مستقلة نُظّمت في أقسام: الموقع، التنبيهات، المؤذن، الألوان — والواجهة الرئيسية أصبحت أنقى</li>
-        <li>تصميم الإعدادات جديد كلياً: عناوين متلألئة، توهج نابض خلف الأزرار، بطاقات زجاجية شفافة، وتذييل زخرفي</li>
-        <li>شفافية زجاجية أنيقة لبطاقات الصلاة، الأذكار، القبلة، والقائمة السريعة</li>
-        <li>صفحة رئيسية مُعاد تصميمها ببطاقة صلاة واحدة تتنفس بحركة البوصلة، ومؤقّت بصري للصلاة القادمة</li>
-        <li>إصلاح: شعار الحديث أصبح متمركزاً في منتصف الشاشة، مع إعادة تصميم حركة تلفّه</li>
-        <li>إصلاح: مواقيت اليوم والقائمة السريعة تتحدث مباشرة عند منتصف الليل دون إعادة فتح التطبيق</li>
-      </ul>
-    </div>
-
-    <div class="cl-item cl-old">
-      <div class="head"><span class="ver">الإصدار 1.2.0</span><span class="date">أغسطس 2026</span></div>
-      <ul>
-        <li>الثيم الذهبي الملكي أصبح هو الأساس للتطبيق</li>
-        <li>الموقع الرسمي صار بألوان الذهبي الملكي نفسها</li>
-        <li>تحسينات عامة في التجربة</li>
-      </ul>
-    </div>
-
-    <div class="cl-item cl-old">
-      <div class="head"><span class="ver">الإصدار 1.1.0</span><span class="date">أغسطس 2026</span></div>
-      <ul>
-        <li>إصلاح: عدّادات المسبحة تُحفظ الآن فعلياً عند كل ضغطة</li>
-        <li>إصلاح: إيقاف تنبيهات الصلاة يلغي المنبهات المجدولة فوراً</li>
-        <li>إصلاح: مواقيت اليوم تتحدث تلقائياً عند منتصف الليل</li>
-        <li>إصلاح: معاينة الأذان لم تعد تجمّد التطبيق</li>
-        <li>إصلاح: البوصلة تعمل على جميع مقاسات الشاشات</li>
-      </ul>
-    </div>
-
-    <div class="cl-item cl-old">
-      <div class="head"><span class="ver">الإصدار 1.0.9</span><span class="date">يوليو 2026</span></div>
-      <ul>
-        <li>إطلاق أولي للتطبيق وإتاحة التحميل المباشر</li>
-        <li>مواقيت الصلاة مع إشعارات الأذان والإقامة</li>
-        <li>بوصلة القبلة، المسبحة، والأذكار</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="container">
-    <div class="moon"></div>
-    <p class="end">﴿وَذَكِّرْ فَإِنَّ الذِّكْرَى تَنفَعُ الْمُؤْمِنِينَ﴾</p>
-    <p class="copy">مِشكاة — نسخة 1.4.1 · جميع الملفات الصوتية والتطبيق متاحة مجاناً للاستخدام الشخصي</p>
-  </div>
-</footer>
-
-<script src="vendor/supabase.min.js?v=6"></script>
-<script src="supabase-config.js?v=6"></script>
-<script src="site.js?v=6"></script>
-<script>
-// كاشف أخطاء: أي خلل في الجافاسكربت يظهر بشريط أصفر بدل الصمت
-window.addEventListener('error', function (ev) {
-  var b = document.getElementById('jsBanner');
-  if (b) { b.style.display = 'block'; b.textContent = '⚠️ خطأ في الصفحة: ' + (ev.message || 'خطأ غير معروف') + (ev.filename ? ' (' + ev.filename.split('/').pop() + ':' + ev.lineno + ')' : ''); }
-});
-window.addEventListener('unhandledrejection', function (ev) {
-  var b = document.getElementById('jsBanner');
-  if (b) { b.style.display = 'block'; b.textContent = '⚠️ خطأ غير متوقع: ' + (ev.reason && ev.reason.message ? ev.reason.message : String(ev.reason)); }
-});
-window.addEventListener('load', function () { setTimeout(function () { document.getElementById('loader').classList.add('done'); }, 650); });
-// ضمانة: حتى لو علق التحميل، تُخفى الشاشة بعد 4 ثوانٍ
-setTimeout(function () { document.getElementById('loader').classList.add('done'); }, 4000);
-document.getElementById('dlBtn').addEventListener('click', trackDownload);
-
-// الإحصائيات العامة للجميع: عدد التحميلات
-function animateNum(el, target) {
-  if (!el || !target) { if (el) el.textContent = (target || 0).toLocaleString('en-US'); return; }
-  const t0 = performance.now(), dur = 1300;
-  (function tick(t) {
-    const p = Math.min((t - t0) / dur, 1);
-    el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString('en-US');
-    if (p < 1) requestAnimationFrame(tick);
-  })(t0);
-}
-async function loadPublicStats() {
-  const strip = document.getElementById('pubStats');
-  if (!strip || !window.mishkatClient) return;
-  try {
-    const { data, error } = await window.mishkatClient.rpc('get_public_stats');
-    if (error || !data) return;
-    strip.classList.remove('hidden');
-    animateNum(document.getElementById('statDownloads'), data.total_downloads);
-  } catch (e) {}
-}
-loadPublicStats();
-setInterval(loadPublicStats, 60000);
-</script>
-
-<script>
-// النجوم
-const stars = document.getElementById('stars');
-const isTouch = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
-for (let i = 0; i < (isTouch ? 40 : 90); i++) {
-  const s = document.createElement('span');
-  s.className = 'star';
-  s.style.left = Math.random() * 100 + '%';
-  s.style.top = Math.random() * 100 + '%';
-  s.style.setProperty('--d', (3 + Math.random() * 5) + 's');
-  s.style.setProperty('--delay', (Math.random() * 5) + 's');
-  s.style.width = s.style.height = (1 + Math.random() * 2.4) + 'px';
-  stars.appendChild(s);
-}
-// جزيئات ذهبية صاعدة
-const motes = document.getElementById('motes');
-for (let i = 0; i < (isTouch ? 12 : 26); i++) {
-  const m = document.createElement('span');
-  m.className = 'mote';
-  const size = 2 + Math.random() * 5;
-  m.style.width = m.style.height = size + 'px';
-  m.style.left = Math.random() * 100 + '%';
-  m.style.setProperty('--dur', (11 + Math.random() * 14) + 's');
-  m.style.setProperty('--delay', (Math.random() * 18) + 's');
-  m.style.setProperty('--sway', (Math.random() * 60 - 30) + 'px');
-  m.style.setProperty('--op', (0.3 + Math.random() * 0.5).toFixed(2));
-  motes.appendChild(m);
-}
-// إخفاء شاشة التحميل
-window.addEventListener('load', () => setTimeout(() => document.getElementById('loader').classList.add('done'), 650));
-// الظهور عند التمرير
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-}, { threshold: 0.14 });
-document.querySelectorAll('.card, .cl-item, .stat').forEach(el => io.observe(el));
-// أرقام متحركة
-const cnt = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (!e.isIntersecting) return;
-    cnt.unobserve(e.target);
-    const el = e.target, target = +el.dataset.count, t0 = performance.now(), dur = 1400;
-    (function tick(t) {
-      const p = Math.min((t - t0) / dur, 1);
-      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(tick);
-    })(t0);
-  });
-}, { threshold: 0.5 });
-document.querySelectorAll('.stat .num').forEach(el => cnt.observe(el));
-</script>
-</body>
-</html>
+      <ul>
+        <li><strong>مصحف المملكة بجودة عالية</strong>: 602 صفحة حقيقية من مصحف مجمع الملك فهد بخط عثمان طه، ممسوحة من الأصل بدقة 400 نقطة في البوصة</li>
+        <li><strong>تصغير صفحات المصحف 5%</strong> لترك مساحة لحركات الحواف الأربع وأزرار التنقل</li>
+        <li><strong>تصميم كريمي موحّد</strong>: قِسم القرآن كامل بخلفية ورقية فاتحة بلا قفزات لونية</li>
+        <li><strong>شريط بحث صغير أعلى المصحف</strong>: ابحث عن السورة أو كلمة في أي آية وانتقل إليها مباشرة</li>
+        <li>انتقالات سلسة بين الصفحات مع حركة السور، وشريط سُفلٍ للتنقل بين الأجزاء والسور والصفحات</li>
+      </ul>
+    </div>
+
+    <div class="cl-item cl-old">
+      <div class="head"><span class="ver">الإصدار 1.3.4</span><span class="date">أغسطس 2026</span></div>
+      <ul>
+        <li><strong>إعادة تصميم صفحة المصحف بالكامل</strong>: أرقام الآيات أصبحت أصغر داخل ميداليات دائرية مذهّبة تزين السطر بدلاً من إفساده</li>
+        <li><strong>الإطار الذهبي يحيط بالكتابة فقط</strong> — من تحت رقم الصفحة إلى فوق أول سطر، وما خارجه زخارف إسلامية جميلة (نجوم، جواهر، حلى زوايا)</li>
+        <li><strong>شريط معلومات جديد فوق الإطار</strong>: يعرض الحزب والصفحة الحالية، ويُفتح بالضغط عليه للقفز لأي صفحة مباشرة</li>
+        <li>قسم القرآن فاتح بالكامل: خلفية بيضاء شفافة، شريط بحث ثابت لا يتحرك عند التقليب، وتفسير وقائمة سور متناسقة</li>
+      </ul>
+    </div>
+
+    <div class="cl-item cl-old">
+      <div class="head"><span class="ver">الإصدار 1.3.3</span><span class="date">أغسطس 2026</span></div>
+      <ul>
+        <li><strong>إصلاح عرض صفحات المصحف</strong>: معالجة التباعد بين لافتة اسم السورة ونص الآيات، وعدم تكرار اسم السورة في صفحات تبدأ بآية واحدة</li>
+        <li>البسملة تُعرض في موضعها الصحيح وبحجم مناسب، وإطارات الصفحات تستقيم مع النص</li>
+        <li><strong>الانتقال المباشر لأي صفحة</strong>: اضغط على شارة «الصفحة رقم» في أعلى المصحف، وأدخل الرقم للقفز إليه فوراً</li>
+        <li>تحسينات استقرار التخطيط على شاشات الأحجام المختلفة</li>
+      </ul>
+    </div>
+
+    <div class="cl-item cl-old">
+      <div class="head"><span class="ver">الإصدار 1.3.2</span><span class="date">أغسطس 2026</span></div>
+      <ul>
+        <li><strong>صفحات المصحف أُعيدت كتابتها برمجياً بالكامل</strong> — لا صور بعد الآن، بل خط أميري للقرآن بتشكيل دقيق وألوان أحكام التجويد (المد أحمر، الغُنّة أخضر، القلقلة أزرق...)</li>
+        <li>الآيات متتالية في تدفق واحد يفصل بينها رقم الآية داخل زخرفة، وصفحات السور تُفتتح بلافتة اسم السورة والبسملة</li>
+        <li>عدد الصفحات مطابق للمصحف الشريف (604 صفحات)، بحجم أقل بكثير للتطبيق</li>
+        <li>الضغط على أي آية يعرض تفسيرها الميسر فوراً وبدقة، مع إطارات وصفحات مرسومة برمجياً بحواف ذهبية وخضراء</li>
+        <li>خفض حجم التطبيق من 77.6 إلى 31.7 MB ثم 33.3 MB في 1.3.2 مع تحسين الأداء والسلاسة</li>
+      </ul>
+    </div>
+
+    <div class="cl-item cl-old">
+      <div class="head"><span class="ver">الإصدار 1.3.0</span><span class="date">أغسطس 2026</span></div>
+      <ul>
+        <li><strong>صفحات المصحف الآن مطابقة لمصحف المدينة الأخضر حرفياً</strong> — 604 صفحات حقيقية بخط عثمان طه وبُنية الآيات الأصلية، تُقلَّب بتمرير أفقي كالكتاب الورقي</li>
+        <li>نفس توزيع الآيات ومواضعها على كل صفحة من صفحات المصحف الرسمي، مع زخارف الصفحات والإطارات الخضراء وترقيم المصحف الأصلي</li>
+        <li>الضغط على أي آية في الصفحة يعرض تفسيرها الميسر، والبحث عن السور والقفز إليها كما كان</li>
+        <li>حفظ تلقائي لآخر صفحة قرأتها — تفتح المصحف وتعود من حيث انتهيت</li>
+      </ul>
+    </div>
+
+    <div class="cl-item cl-old">
+      <div class="head"><span class="ver">الإصدار 1.2.2</span><span class="date">أغسطس 2026</span></div>
+      <ul>
+        <li><strong>المصحف الآن بمظهر المصحف الحقيقي</strong> — 604 صفحات بمصحف المدينة من الأولى إلى الأخيرة، تُقلَّب بسحب أفقي، والآيات تتصل نصاً مدوّناً يفصل بينها رقم الآية داخل النص</li>
+        <li>خانة بحث أعلى الصفحة: اضغط عليها فتظهر قائمة السور مرتّبة، واكتب لتصفيتها فوراً والقفز إلى أي سورة بضغطة</li>
+        <li>الضغط على أي آية يعرض تفسيرها الميسر فوراً، وكل ذلك داخل التطبيق بلا إنترنت</li>
+        <li>حفظ تلقائي لآخر صفحة قرأتها — تفتح المصحف وتعود من حيث انتهيت</li>
+      </ul>
+    </div>
+
+    <div class="cl-item cl-old">
+      <div class="head"><span class="ver">الإصدار 1.2.1</span><span class="date">أغسطس 2026</span></div>
+      <ul>
+        <li>شعارات متحركة لكل شاشة: مصحف يفتح ويتلوّح، هلال، ترس الإعدادات، مسبحة تتدحرج حباتها، بوصلة بسهم حيّ، ولفافة حديثٍ تتلف وتنفتح</li>
+        <li>خلفية حية فاخرة: جزيئات ذهبية متناثرة تسبح في مسارات عشوائية، هالات بوكيه ضبابية بعمق بصري، شهاب، توهجات نابضة، وحلقة دوّارة حول التطبيق</li>
+        <li>الإعدادات انتقلت إلى شاشة مستقلة نُظّمت في أقسام: الموقع، التنبيهات، المؤذن، الألوان — والواجهة الرئيسية أصبحت أنقى</li>
+        <li>تصميم الإعدادات جديد كلياً: عناوين متلألئة، توهج نابض خلف الأزرار، بطاقات زجاجية شفافة، وتذييل زخرفي</li>
+        <li>شفافية زجاجية أنيقة لبطاقات الصلاة، الأذكار، القبلة، والقائمة السريعة</li>
+        <li>صفحة رئيسية مُعاد تصميمها ببطاقة صلاة واحدة تتنفس بحركة البوصلة، ومؤقّت بصري للصلاة القادمة</li>
+        <li>إصلاح: شعار الحديث أصبح متمركزاً في منتصف الشاشة، مع إعادة تصميم حركة تلفّه</li>
+        <li>إصلاح: مواقيت اليوم والقائمة السريعة تتحدث مباشرة عند منتصف الليل دون إعادة فتح التطبيق</li>
+      </ul>
+    </div>
+
+    <div class="cl-item cl-old">
+      <div class="head"><span class="ver">الإصدار 1.2.0</span><span class="date">أغسطس 2026</span></div>
+      <ul>
+        <li>الثيم الذهبي الملكي أصبح هو الأساس للتطبيق</li>
+        <li>الموقع الرسمي صار بألوان الذهبي الملكي نفسها</li>
+        <li>تحسينات عامة في التجربة</li>
+      </ul>
+    </div>
+
+    <div class="cl-item cl-old">
+      <div class="head"><span class="ver">الإصدار 1.1.0</span><span class="date">أغسطس 2026</span></div>
+      <ul>
+        <li>إصلاح: عدّادات المسبحة تُحفظ الآن فعلياً عند كل ضغطة</li>
+        <li>إصلاح: إيقاف تنبيهات الصلاة يلغي المنبهات المجدولة فوراً</li>
+        <li>إصلاح: مواقيت اليوم تتحدث تلقائياً عند منتصف الليل</li>
+        <li>إصلاح: معاينة الأذان لم تعد تجمّد التطبيق</li>
+        <li>إصلاح: البوصلة تعمل على جميع مقاسات الشاشات</li>
+      </ul>
+    </div>
+
+    <div class="cl-item cl-old">
+      <div class="head"><span class="ver">الإصدار 1.0.9</span><span class="date">يوليو 2026</span></div>
+      <ul>
+        <li>إطلاق أولي للتطبيق وإتاحة التحميل المباشر</li>
+        <li>مواقيت الصلاة مع إشعارات الأذان والإقامة</li>
+        <li>بوصلة القبلة، المسبحة، والأذكار</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="moon"></div>
+    <p class="end">﴿وَذَكِّرْ فَإِنَّ الذِّكْرَى تَنفَعُ الْمُؤْمِنِينَ﴾</p>
+    <p class="copy">مِشكاة — نسخة 1.5.0 · جميع الملفات الصوتية والتطبيق متاحة مجاناً للاستخدام الشخصي</p>
+  </div>
+</footer>
+
+<script src="vendor/supabase.min.js?v=6"></script>
+<script src="supabase-config.js?v=6"></script>
+<script src="site.js?v=6"></script>
+<script>
+// كاشف أخطاء: أي خلل في الجافاسكربت يظهر بشريط أصفر بدل الصمت
+window.addEventListener('error', function (ev) {
+  var b = document.getElementById('jsBanner');
+  if (b) { b.style.display = 'block'; b.textContent = '⚠️ خطأ في الصفحة: ' + (ev.message || 'خطأ غير معروف') + (ev.filename ? ' (' + ev.filename.split('/').pop() + ':' + ev.lineno + ')' : ''); }
+});
+window.addEventListener('unhandledrejection', function (ev) {
+  var b = document.getElementById('jsBanner');
+  if (b) { b.style.display = 'block'; b.textContent = '⚠️ خطأ غير متوقع: ' + (ev.reason && ev.reason.message ? ev.reason.message : String(ev.reason)); }
+});
+window.addEventListener('load', function () { setTimeout(function () { document.getElementById('loader').classList.add('done'); }, 650); });
+// ضمانة: حتى لو علق التحميل، تُخفى الشاشة بعد 4 ثوانٍ
+setTimeout(function () { document.getElementById('loader').classList.add('done'); }, 4000);
+document.getElementById('dlBtn').addEventListener('click', trackDownload);
+
+// الإحصائيات العامة للجميع: عدد التحميلات
+function animateNum(el, target) {
+  if (!el || !target) { if (el) el.textContent = (target || 0).toLocaleString('en-US'); return; }
+  const t0 = performance.now(), dur = 1300;
+  (function tick(t) {
+    const p = Math.min((t - t0) / dur, 1);
+    el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString('en-US');
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+async function loadPublicStats() {
+  const strip = document.getElementById('pubStats');
+  if (!strip || !window.mishkatClient) return;
+  try {
+    const { data, error } = await window.mishkatClient.rpc('get_public_stats');
+    if (error || !data) return;
+    strip.classList.remove('hidden');
+    animateNum(document.getElementById('statDownloads'), data.total_downloads);
+  } catch (e) {}
+}
+loadPublicStats();
+setInterval(loadPublicStats, 60000);
+</script>
+
+<script>
+// النجوم
+const stars = document.getElementById('stars');
+const isTouch = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
+for (let i = 0; i < (isTouch ? 40 : 90); i++) {
+  const s = document.createElement('span');
+  s.className = 'star';
+  s.style.left = Math.random() * 100 + '%';
+  s.style.top = Math.random() * 100 + '%';
+  s.style.setProperty('--d', (3 + Math.random() * 5) + 's');
+  s.style.setProperty('--delay', (Math.random() * 5) + 's');
+  s.style.width = s.style.height = (1 + Math.random() * 2.4) + 'px';
+  stars.appendChild(s);
+}
+// جزيئات ذهبية صاعدة
+const motes = document.getElementById('motes');
+for (let i = 0; i < (isTouch ? 12 : 26); i++) {
+  const m = document.createElement('span');
+  m.className = 'mote';
+  const size = 2 + Math.random() * 5;
+  m.style.width = m.style.height = size + 'px';
+  m.style.left = Math.random() * 100 + '%';
+  m.style.setProperty('--dur', (11 + Math.random() * 14) + 's');
+  m.style.setProperty('--delay', (Math.random() * 18) + 's');
+  m.style.setProperty('--sway', (Math.random() * 60 - 30) + 'px');
+  m.style.setProperty('--op', (0.3 + Math.random() * 0.5).toFixed(2));
+  motes.appendChild(m);
+}
+// إخفاء شاشة التحميل
+window.addEventListener('load', () => setTimeout(() => document.getElementById('loader').classList.add('done'), 650));
+// الظهور عند التمرير
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.14 });
+document.querySelectorAll('.card, .cl-item, .stat').forEach(el => io.observe(el));
+// أرقام متحركة
+const cnt = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    cnt.unobserve(e.target);
+    const el = e.target, target = +el.dataset.count, t0 = performance.now(), dur = 1400;
+    (function tick(t) {
+      const p = Math.min((t - t0) / dur, 1);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(tick);
+    })(t0);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.stat .num').forEach(el => cnt.observe(el));
+</script>
+</body>
+</html>
